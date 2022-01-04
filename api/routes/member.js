@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const router = express.Router();
 const memberController = require('../controllers/member');
+const jwtAuth = require('../middlewares/auth');
 
 const storageExcel = multer.diskStorage({
     destination: function (request, response, callback) {
@@ -20,6 +21,11 @@ const uploadExcel = multer({
         fileSize: 1024 * 1024 * 25
     }
 })
+
+
+router.use([
+    jwtAuth,
+]);
 
 router.route('/')
     .get(memberController.index)

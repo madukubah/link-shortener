@@ -66,7 +66,14 @@ const index = async (req, res) => {
     let query = {}
     query.softDelete = null
     if(search) {
-        query.name = new RegExp(`${search}`, 'i')
+        query["$or"] = [
+            {
+                name: new RegExp(`${search}`, 'i')
+            },
+            {
+                employee_no: new RegExp(`${search}`, 'i')
+            }
+        ]
     }
     return Member.paginate(query, { page: page, limit: limit })
         .then(members => {
