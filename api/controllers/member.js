@@ -61,6 +61,7 @@ const create = async (req, res) => {
 const index = async (req, res) => {
     const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
+    const status = sanitize(req.query.status)
     const search = req.query.search
 
     let query = {}
@@ -73,7 +74,10 @@ const index = async (req, res) => {
             {
                 employee_no: new RegExp(`${search}`, 'i')
             }
-        ]
+        ];
+    }
+    if(status) {
+        query['status'] = status
     }
     return Member.paginate(query, { page: page, limit: limit })
         .then(members => {
@@ -139,13 +143,13 @@ const update = (req, res) => {
 
 const unlink = (req, res) => {
     let id = req.params.memberId;
-    // if (id == req.user.id) {
-    //     res.status(422);
-    //     res.json({
-    //         errors: ["Cannot delete your own data"]
-    //     });
-    //     return;
-    // }
+    if (id == req.user.id) {
+        res.status(422);
+        res.json({
+            errors: ["Cannot delete your own data"]
+        });
+        return;
+    }
     return Member.findByIdAndRemove(id)
         .then(_ => {
             res.status(200);
@@ -162,7 +166,7 @@ const unlink = (req, res) => {
 }
 
 const importExcel = (req, res) => {
-    if(req.file.filename) {
+    if(req.file && req.file.filename) {
         const filePath = `./uploads/excels/${req.file.filename}`
         const wbRead = xlxs.readFile(filePath)
         const sheetNameLists = wbRead.SheetNames
@@ -183,7 +187,7 @@ const importExcel = (req, res) => {
                 deposit_amount: val["setoran"],
                 total_savings: val["total simpanan"],
                 savings_type: val["tipe simpanan"],
-                status: val["status"],
+                status: val["status"] == 'aktif' ? 'active': 'nonactive' ,
             }
         });
         console.log(datas);

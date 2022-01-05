@@ -7,6 +7,7 @@ const helmet = require('helmet')
 const indexRouter = require('./api/routes/index');
 const authRouter = require('./api/routes/auth');
 const memberRouter = require('./api/routes/member');
+const depositRouter = require('./api/routes/deposit');
 
 app.use(helmet())
 app.use(morgan('dev'))
@@ -31,6 +32,7 @@ app.use((request, response, next) => {
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
 app.use('/member', memberRouter);
+app.use('/deposit', depositRouter);
 
 // handle error
 app.use((request, response, next) => {

@@ -69,7 +69,8 @@ const MemberSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            trim: true,
+            enum: ['active', 'nonactive'],
+            default: 'active',
             required: [true, 'status cannot be empty']
         },
     },
