@@ -12,21 +12,10 @@ const index = async (req, res) => {
     const search = req.query.search
 
     let query = {}
-    query.softDelete = null
-    if(search) {
-        query["$or"] = [
-            {
-                name: new RegExp(`${search}`, 'i')
-            },
-            {
-                employee_no: new RegExp(`${search}`, 'i')
-            }
-        ]
-    }
     return Deposit.paginate(query, { page: page, limit: limit })
-        .then(members => {
+        .then(deposits => {
             res.status(201);
-            res.json(members)
+            res.json(deposits)
         })
         .catch(error => {
             res.status(422);
@@ -36,13 +25,15 @@ const index = async (req, res) => {
         })
 }
 
-const show = (req, res) => {
+const getByMemberId = (req, res) => {
     const id = req.params.memberId;
-    return Deposit.findById(id)
-        .then(member => {
-            if (member) {
+
+    const query = { member_id: id }
+    return Deposit.find(query)
+        .then(deposits => {
+            if (deposits) {
                 res.status(200);
-                res.json(member);
+                res.json(deposits);
             }
             else {
                 res.status(404);
@@ -67,10 +58,7 @@ const importExcel = async (req, res) => {
         const fetchData = xlxs.utils.sheet_to_json(wbRead.Sheets[sheetNameLists[0]])
 
         let datas = fetchData.map( (val) => {
-            // let employee = await Member.find({employee_no: val["Nomor Pegawai"]});
-
             return {
-                // employee_id: employee._id,
                 employee_no: val["Nomor Pegawai"],
                 amount: val["Setoran"],
                 is_deposit: val['Menyetor (Ya/Tidak)'],
@@ -82,7 +70,7 @@ const importExcel = async (req, res) => {
                 continue;
             }
             let employee = await Member.findOne({employee_no: datas[i].employee_no});
-            datas[i]["employee_id"] = employee._id
+            datas[i]["member_id"] = employee._id
             datas[i]["date"] = Date.now()
         }
         // console.log(datas);
@@ -197,7 +185,7 @@ const exportExcel = async (req, res) => {
 
 module.exports = {
     index,
-    show,
+    getByMemberId,
     importExcel,
     exportExcel
 }

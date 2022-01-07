@@ -22,9 +22,12 @@ const uploadExcel = multer({
     }
 })
 
-// router.use([
-//     jwtAuth,
-// ]);
+router.use([
+    jwtAuth,
+]);
+
+router.route('/:memberId')
+    .get(depositController.getByMemberId)
 
 router.route('/exportExcel')
     .get(depositController.exportExcel)

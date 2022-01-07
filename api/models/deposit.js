@@ -3,7 +3,7 @@ const mongoosePaginate = require('mongoose-paginate-v2')
 
 const DepositSchema = new mongoose.Schema(
     {
-        employee_id: {
+        member_id: {
             type: mongoose.Schema.Types.ObjectId,
             required: [true, 'employee id cannot be empty']
         },
@@ -14,6 +14,7 @@ const DepositSchema = new mongoose.Schema(
         date: {
             type: Date,
             required: [true, 'join date cannot be empty'],
+            default: Date.now()
         },
     },
     { timestamps: { createdAt: 'createdAt', updatedAt: 'createdAt' } }
