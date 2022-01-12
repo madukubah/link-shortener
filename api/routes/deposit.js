@@ -26,9 +26,6 @@ router.use([
     jwtAuth,
 ]);
 
-router.route('/:memberId')
-    .get(depositController.getByMemberId)
-
 router.route('/exportExcel')
     .get(depositController.exportExcel)
 
@@ -36,5 +33,8 @@ router.route('/importExcel')
     .post([
         uploadExcel.single('file')
     ],depositController.importExcel)
+
+router.route('/:memberId')
+    .get(depositController.getByMemberId)
 
 module.exports = router;

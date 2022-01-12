@@ -65,10 +65,10 @@ const importExcel = async (req, res) => {
             }
         });
         for(let i=datas.length-1; i>=0; i-- ){
-            if(datas[i]["is_deposit"] != 'ya' ){
-                datas.splice(i, 1);
-                continue;
-            }
+            // if(datas[i]["is_deposit"] != 'ya' ){
+            //     datas.splice(i, 1);
+            //     continue;
+            // }
             let employee = await Member.findOne({employee_no: datas[i].employee_no});
             datas[i]["member_id"] = employee._id
             datas[i]["date"] = Date.now()
@@ -166,7 +166,9 @@ const exportExcel = async (req, res) => {
             width: 120 
         },
     }
-    const dataset = await Member.find();
+    const dataset = await Member.find(
+        {status: "active"}
+    );
     
     const report = excel.buildExport(
         [ 
