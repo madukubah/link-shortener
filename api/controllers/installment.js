@@ -3,7 +3,7 @@ const xlxs = require('xlsx');
 const fs = require('fs');
 const excel = require('node-excel-export');
 
-const Deposit = require('../models/deposit');
+const Installment = require('../models/installment');
 const Member = require('../models/member');
 
 const index = async (req, res) => {
@@ -12,7 +12,7 @@ const index = async (req, res) => {
     const search = req.query.search
 
     let query = {}
-    return Deposit.paginate(query, { page: page, limit: limit })
+    return Installment.paginate(query, { page: page, limit: limit })
         .then(deposits => {
             res.status(201);
             res.json(deposits)
@@ -29,7 +29,7 @@ const getByMemberId = (req, res) => {
     const id = req.params.memberId;
 
     const query = { member_id: id }
-    return Deposit.find(query)
+    return Installment.find(query)
         .then(deposits => {
             if (deposits) {
                 res.status(200);
@@ -76,7 +76,7 @@ const importExcel = async (req, res) => {
         // console.log(datas);
         if(fs.existsSync(filePath)) fs.unlinkSync(filePath)
 
-        return Deposit.insertMany(datas)
+        return Installment.insertMany(datas)
             .then(deposits => {
                 res.status(201);
                 res.json(deposits)
@@ -94,7 +94,6 @@ const importExcel = async (req, res) => {
     });
     return 
 }
-
 
 module.exports = {
     index,

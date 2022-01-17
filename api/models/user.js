@@ -13,7 +13,17 @@ const UserSchema = new mongoose.Schema(
             type: String,
             required: true,
             set: v => bcrypt.hashSync(v, bcrypt.genSaltSync()),
-        }
+        },
+        pin: {
+            type: Number,
+            trim: true,
+            required: true,
+        },
+        role: {
+            type: String,
+            enum: ['admin', 'user'],
+            default: 'user',
+        },
     },
     { timestamps: { createdAt: 'createdAt', updatedAt: 'createdAt' } }
 );

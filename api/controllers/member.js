@@ -1,8 +1,10 @@
 const sanitize = require('mongo-sanitize');
 const xlxs = require('xlsx');
 const fs = require('fs');
+const excel = require('node-excel-export');
 
 const Member = require('../models/member');
+const User = require('../models/user');
 
 const create = async (req, res) => {
     try {
@@ -11,7 +13,6 @@ const create = async (req, res) => {
             employee_no,
             email,
             phone,
-            pin,
             company_name,
             branch_name,
             city,
@@ -22,13 +23,17 @@ const create = async (req, res) => {
             savings_type,
             status,
         } = req.body;
-
+        const user = await User.create({
+            username: email,
+            password: email.substr(0, email.indexOf("@")),
+            pin: "123456"
+        })
         return Member.create({
             name: name,
+            user_id: user._id,
             employee_no: employee_no,
             email: email,
             phone: phone,
-            pin: pin,
             company_name: company_name,
             branch_name: branch_name,
             city: city,
@@ -44,6 +49,7 @@ const create = async (req, res) => {
                 res.json(member)
             })
             .catch(error => {
+                user.remove();
                 res.status(422);
                 res.json({
                     errors: error.messages
@@ -211,11 +217,104 @@ const importExcel = (req, res) => {
     });
     return 
 }
+
+
+const exportExcel = async (req, res) => {
+    // You can define styles as json object
+    const styles = {
+        headerDark: {
+            font: {
+                color: {
+                    rgb: '00000000'
+                },
+                sz: 12,
+            }
+        },
+    };
+    
+    //Here you specify the export structure
+    const specification = {
+        name: { 
+            displayName: 'Nama', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        employee_no: { 
+            displayName: 'Nomor Pegawai', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        email: { 
+            displayName: 'Email', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        phone: { 
+            displayName: 'Nomor Telepon', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        join_date: { 
+            displayName: 'Tanggal bergabung', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        company_name: { 
+            displayName: 'Perusahaan', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        branch_name: { 
+            displayName: 'Cabang', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        city: { 
+            displayName: 'Kota', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        deposit_amount: { 
+            displayName: 'Setoran', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        status: { 
+            displayName: 'Status', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        is_deposit: { 
+            displayName: 'Menyetor (Ya/Tidak)', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+    }
+    const dataset = await Member.find(
+        {status: "active"}
+    );
+    
+    const report = excel.buildExport(
+        [ 
+            {
+                name: 'Anggota',
+                specification: specification,
+                data: dataset      
+            }
+        ]
+    );
+    
+    // You can then return this straight
+    res.attachment('Anggota.xlsx'); // This is sails.js specific (in general you need to set headers)
+    return res.send(report);
+}
+
 module.exports = {
     create,
     index,
     show,
     update,
     unlink,
-    importExcel
+    importExcel,
+    exportExcel
 }

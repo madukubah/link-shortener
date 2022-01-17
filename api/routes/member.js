@@ -31,6 +31,10 @@ router.route('/')
     .get(memberController.index)
     .post(memberController.create);
 
+
+router.route('/exportExcel')
+    .get(memberController.exportExcel)
+
 router.route('/:memberId')
     .get(memberController.show)
     .patch(memberController.update)
