@@ -171,7 +171,7 @@ const unlink = (req, res) => {
         })
 }
 
-const importExcel = (req, res) => {
+const importExcel = async (req, res) => {
     if(req.file && req.file.filename) {
         const filePath = `./uploads/excels/${req.file.filename}`
         const wbRead = xlxs.readFile(filePath)
@@ -184,7 +184,6 @@ const importExcel = (req, res) => {
                 employee_no: val["nomor pegawai"],
                 email: val["email"],
                 phone: val["nomor telepon"],
-                pin: val["pin"],
                 company_name: val["perusahaan"],
                 branch_name: val["cabang"],
                 city: val["kota"],
@@ -197,6 +196,16 @@ const importExcel = (req, res) => {
             }
         });
         console.log(datas);
+        for(let i=0; i< datas.length; i++ ){
+            let email = datas[i].email;
+            let user = await User.create({
+                username: email,
+                password: email.substr(0, email.indexOf("@")),
+                pin: "123456"
+            })
+            datas[i].user_id = user._id;
+        }
+
         if(fs.existsSync(filePath)) fs.unlinkSync(filePath)
 
         return Member.insertMany(datas)
@@ -207,7 +216,7 @@ const importExcel = (req, res) => {
             .catch(error => {
                 res.status(422);
                 res.json({
-                    errors: error.message
+                    errors: [error.message]
                 });
             })
     }

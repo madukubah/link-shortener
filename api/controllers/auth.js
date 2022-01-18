@@ -6,10 +6,12 @@ const signUp = (req, res) => {
     const {
         username,
         password,
+        pin,
     } = req.body;
     return User.create({
         username: username,
-        password: password
+        password: password,
+        pin: pin,
     })
         .then(user => {
             const token = jwt.sign(
