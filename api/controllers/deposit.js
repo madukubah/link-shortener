@@ -27,9 +27,12 @@ const index = async (req, res) => {
 
 const getByMemberId = (req, res) => {
     const id = req.params.memberId;
+    const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
+    const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
+    const status = sanitize(req.query.status)
 
     const query = { member_id: id }
-    return Deposit.find(query)
+    return Deposit.paginate(query, { page: page, limit: limit })
         .then(deposits => {
             if (deposits) {
                 res.status(200);
@@ -70,10 +73,14 @@ const importExcel = async (req, res) => {
             //     continue;
             // }
             let employee = await Member.findOne({employee_no: datas[i].employee_no});
+            if( !employee ) {
+                datas.splice(i, 1);
+                continue;
+            }
             datas[i]["member_id"] = employee._id
             datas[i]["date"] = Date.now()
         }
-        // console.log(datas);
+        console.log(datas);
         if(fs.existsSync(filePath)) fs.unlinkSync(filePath)
 
         return Deposit.insertMany(datas)
@@ -84,7 +91,7 @@ const importExcel = async (req, res) => {
             .catch(error => {
                 res.status(422);
                 res.json({
-                    errors: error.messages
+                    errors: error.message
                 });
             })
     }

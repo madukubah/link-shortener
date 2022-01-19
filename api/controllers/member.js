@@ -252,6 +252,11 @@ const exportExcel = async (req, res) => {
             headerStyle: styles.headerDark, 
             width: 120 
         },
+        id_number: { 
+            displayName: 'KTP', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
         employee_no: { 
             displayName: 'Nomor Pegawai', 
             headerStyle: styles.headerDark, 
@@ -294,11 +299,6 @@ const exportExcel = async (req, res) => {
         },
         status: { 
             displayName: 'Status', 
-            headerStyle: styles.headerDark, 
-            width: 120 
-        },
-        is_deposit: { 
-            displayName: 'Menyetor (Ya/Tidak)', 
             headerStyle: styles.headerDark, 
             width: 120 
         },

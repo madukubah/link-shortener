@@ -31,7 +31,6 @@ router.route('/')
     .get(memberController.index)
     .post(memberController.create);
 
-
 router.route('/exportExcel')
     .get(memberController.exportExcel)
 
