@@ -7,6 +7,10 @@ const MemberSchema = new mongoose.Schema(
             type: String,
             required: [true, 'name cannot be empty']
         },
+        id_number: {
+            type: String,
+            required: [true, 'id number cannot be empty']
+        },
         user_id: {
             type: mongoose.Schema.Types.ObjectId,
             required: [true, 'user id cannot be empty']
@@ -47,6 +51,10 @@ const MemberSchema = new mongoose.Schema(
         join_date: {
             type: Date,
             required: [true, 'join date cannot be empty']
+        },
+        end_date: {
+            type: Date,
+            required: [true, 'end date cannot be empty']
         },
         salary: {
             type: Number,

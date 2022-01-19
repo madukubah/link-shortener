@@ -10,6 +10,7 @@ const create = async (req, res) => {
     try {
         const {
             name,
+            id_number,
             employee_no,
             email,
             phone,
@@ -17,6 +18,7 @@ const create = async (req, res) => {
             branch_name,
             city,
             join_date,
+            end_date,
             salary,
             deposit_amount,
             total_savings,
@@ -30,6 +32,7 @@ const create = async (req, res) => {
         })
         return Member.create({
             name: name,
+            id_number: id_number,
             user_id: user._id,
             employee_no: employee_no,
             email: email,
@@ -38,6 +41,7 @@ const create = async (req, res) => {
             branch_name: branch_name,
             city: city,
             join_date: join_date,
+            end_date: end_date,
             salary: salary,
             deposit_amount: deposit_amount,
             total_savings: total_savings,
