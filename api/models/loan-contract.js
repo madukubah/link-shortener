@@ -1,37 +1,62 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2')
 
-const InstallmentSchema = new mongoose.Schema(
+const LoanContractSchema = new mongoose.Schema(
     {
-        member_id: {
+        name: {
+            type: String,
+            required: [true, 'name cannot be empty']
+        },
+        user_id: {
             type: mongoose.Schema.Types.ObjectId,
             required: [true, 'employee id cannot be empty']
+        },
+        desc: {
+            type: String,
+            required: [true, 'desc cannot be empty']
+        },
+        period: {
+            type: Number,
+            trim: true,
+            defaut: 0
         },
         amount: {
             type: Number,
             trim: true,
+            defaut: 0
+        },
+        reduced: {
+            type: Number,
+            trim: true,
+            defaut: 0
         },
         date: {
             type: Date,
-            required: [true, 'join date cannot be empty'],
+            required: [true, 'date cannot be empty'],
             default: Date.now()
+        },
+        status: {
+            type: String,
+            enum: ['draft', 'success', 'cancel'],
+            default: 'draft',
+            required: [true, 'status cannot be empty']
         },
     },
     { timestamps: { createdAt: 'createdAt', updatedAt: 'createdAt' } }
 );
 
-InstallmentSchema.post( 'save', function (error, doc, next) {
+LoanContractSchema.post( 'save', function (error, doc, next) {
     error.messages = error.message.split(", ")
     next();
 });
 
-InstallmentSchema.post( 'update', function (error, doc, next) {
+LoanContractSchema.post( 'update', function (error, doc, next) {
     error.messages = error.message.split(", ")
     next();
 });
 
-InstallmentSchema.plugin(mongoosePaginate)
+LoanContractSchema.plugin(mongoosePaginate)
 
-const schemaModel = mongoose.model('installment', InstallmentSchema);
+const schemaModel = mongoose.model('loan-contract', LoanContractSchema);
 schemaModel.paginate().then({})
 module.exports = schemaModel

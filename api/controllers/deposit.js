@@ -34,16 +34,8 @@ const getByMemberId = (req, res) => {
     const query = { member_id: id }
     return Deposit.paginate(query, { page: page, limit: limit })
         .then(deposits => {
-            if (deposits) {
-                res.status(200);
-                res.json(deposits);
-            }
-            else {
-                res.status(404);
-                res.json({
-                    errors: ["Not Found"]
-                });
-            }
+            res.status(200);
+            res.json(deposits);
         })
         .catch(err => {
             res.status(500);
@@ -68,10 +60,7 @@ const importExcel = async (req, res) => {
             }
         });
         for(let i=datas.length-1; i>=0; i-- ){
-            // if(datas[i]["is_deposit"] != 'ya' ){
-            //     datas.splice(i, 1);
-            //     continue;
-            // }
+            
             let employee = await Member.findOne({employee_no: datas[i].employee_no});
             if( !employee ) {
                 datas.splice(i, 1);
@@ -101,7 +90,6 @@ const importExcel = async (req, res) => {
     });
     return 
 }
-
 
 module.exports = {
     index,

@@ -7,13 +7,17 @@ const InstallmentSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             required: [true, 'employee id cannot be empty']
         },
+        contract_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: [true, 'contract id cannot be empty']
+        },
         amount: {
             type: Number,
             trim: true,
         },
         date: {
             type: Date,
-            required: [true, 'join date cannot be empty'],
+            required: [true, 'date cannot be empty'],
             default: Date.now()
         },
     },

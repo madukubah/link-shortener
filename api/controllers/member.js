@@ -75,7 +75,6 @@ const index = async (req, res) => {
     const search = req.query.search
 
     let query = {}
-    query.softDelete = null
     if(search) {
         query["$or"] = [
             {
@@ -230,7 +229,6 @@ const importExcel = async (req, res) => {
     });
     return 
 }
-
 
 const exportExcel = async (req, res) => {
     // You can define styles as json object
