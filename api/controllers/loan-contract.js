@@ -12,7 +12,6 @@ const create = async (req, res) => {
             amount,
             reduced,
             date,
-            status
         } = req.body;
 
         return LoanContract.create({

@@ -10,6 +10,7 @@ const memberRouter = require('./api/routes/member');
 const depositRouter = require('./api/routes/deposit');
 const userRouter = require('./api/routes/user');
 const loanContractRouter = require('./api/routes/loan-contract');
+const installmentRouter = require('./api/routes/installment');
 
 app.use(helmet())
 app.use(morgan('dev'))
@@ -37,6 +38,7 @@ app.use('/member', memberRouter);
 app.use('/deposit', depositRouter);
 app.use('/user', userRouter);
 app.use('/loan-contract', loanContractRouter);
+app.use('/installment', installmentRouter);
 
 // handle error
 app.use((request, response, next) => {

@@ -6,6 +6,27 @@ const excel = require('node-excel-export');
 const Member = require('../models/member');
 const User = require('../models/user');
 
+const serialize = (data) => {
+    return {
+        name: data.name? data.name: null,
+        id_number: data.id_number? data.id_number : null,
+        user_id: data.user_id?data.user_id:null,
+        employee_no: data.employee_no? data.employee_no: null,
+        email: data.email? data.email: null,
+        phone: data.phone? data.phone: null,
+        company_name: data.company_name? data.company_name: null,
+        branch_name: data.branch_name? data.branch_name: null,
+        city: data.city? data.city: null,
+        join_date: data.join_date? data.join_date: null,
+        end_date: data.end_date? data.end_date: null,
+        salary: data.salary? data.salary: null,
+        deposit_amount: data.deposit_amount? data.deposit_amount: null,
+        total_savings: data.total_savings? data.total_savings: null,
+        savings_type: data.savings_type? data.savings_type: null,
+        status: data.status? data.status: null,
+    }
+}
+
 const create = async (req, res) => {
     try {
         const {
@@ -90,8 +111,10 @@ const index = async (req, res) => {
     }
     return Member.paginate(query, { page: page, limit: limit })
         .then(members => {
+            members.docs = members.docs.map( el => serialize(el) )
             res.status(201);
             res.json(members)
+            // res.json(members.map( el => serialize(el) ))
         })
         .catch(error => {
             res.status(422);
@@ -107,7 +130,7 @@ const show = (req, res) => {
         .then(member => {
             if (member) {
                 res.status(200);
-                res.json(member);
+                res.json(serialize(member));
             }
             else {
                 res.status(404);
@@ -132,7 +155,7 @@ const update = (req, res) => {
             if (result) {
                 return Member.findById(result._id).then(member => {
                     res.status(200);
-                    res.json(member);
+                    res.json(serialize(member));
                 });
             }
             else {
@@ -291,12 +314,22 @@ const exportExcel = async (req, res) => {
             width: 120 
         },
         deposit_amount: { 
-            displayName: 'Setoran', 
+            displayName: 'Setoran Simpanan', 
             headerStyle: styles.headerDark, 
             width: 120 
         },
-        status: { 
-            displayName: 'Status', 
+        loan_installment_amount: { 
+            displayName: 'Setoran Pinjaman', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        credit_amount: { 
+            displayName: 'Setoran Kredit', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        time_deposit: { 
+            displayName: 'Setoran Tempo', 
             headerStyle: styles.headerDark, 
             width: 120 
         },

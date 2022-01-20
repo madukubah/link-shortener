@@ -3,10 +3,6 @@ const mongoosePaginate = require('mongoose-paginate-v2')
 
 const InstallmentSchema = new mongoose.Schema(
     {
-        member_id: {
-            type: mongoose.Schema.Types.ObjectId,
-            required: [true, 'employee id cannot be empty']
-        },
         contract_id: {
             type: mongoose.Schema.Types.ObjectId,
             required: [true, 'contract id cannot be empty']
