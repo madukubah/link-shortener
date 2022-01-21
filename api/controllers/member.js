@@ -8,6 +8,7 @@ const User = require('../models/user');
 
 const serialize = (data) => {
     return {
+        _id: data._id? data._id: null,
         name: data.name? data.name: null,
         id_number: data.id_number? data.id_number : null,
         user_id: data.user_id?data.user_id:null,
