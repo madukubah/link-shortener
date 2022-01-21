@@ -45,9 +45,13 @@ const create = async (req, res) => {
 const index = async (req, res) => {
     const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
+    const status = sanitize(req.query.status)
     const search = req.query.search
 
     let query = {}
+    if(status) {
+        query['status'] = status
+    }
     return LoanContract.paginate(query, { page: page, limit: limit })
         .then(loanContracts => {
             res.status(201);
