@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const Member = require('../models/member');
 const User = require('../models/user');
 const Deposit = require('../models/deposit');
+const BranchOffice = require('../models/branch-office');
 
 const serialize = (data) => {
     return {
@@ -18,7 +19,6 @@ const serialize = (data) => {
         email: data.email? data.email: null,
         phone: data.phone? data.phone: null,
         company_name: data.company_name? data.company_name: null,
-        branch_name: data.branch_name? data.branch_name: null,
         city: data.city? data.city: null,
         join_date: data.join_date? data.join_date: null,
         end_date: data.end_date? data.end_date: null,
@@ -41,7 +41,7 @@ const create = async (req, res) => {
             email,
             phone,
             company_name,
-            branch_name,
+            branch_id,
             city,
             join_date,
             end_date,
@@ -56,6 +56,7 @@ const create = async (req, res) => {
             password: email.substr(0, email.indexOf("@")),
             pin: "123456"
         })
+        const branchOffice = await BranchOffice.findById(branch_id)
         return Member.create({
             name: name,
             id_number: id_number,
@@ -64,7 +65,7 @@ const create = async (req, res) => {
             email: email,
             phone: phone,
             company_name: company_name,
-            branch_name: branch_name,
+            branch_id: branchOffice._id,
             city: city,
             join_date: join_date,
             end_date: end_date,
@@ -119,9 +120,7 @@ const index = async (req, res) => {
     for(let i=0; i< members.docs.length; i++ ){
         let memberId = members.docs[i]._id;
         let deposits = await Deposit.find({member_id: memberId })
-        members.docs[i].total_deposits = deposits.reduce(
-            (prev, current)=> prev + current.amount, 0
-            );
+        members.docs[i].total_deposits = deposits.reduce((prev, current)=> prev + current.amount, 0);
     }
     res.status(201);
     res.json(members);
@@ -305,11 +304,11 @@ const exportExcel = async (req, res) => {
             headerStyle: styles.headerDark, 
             width: 120 
         },
-        branch_name: { 
-            displayName: 'Cabang', 
-            headerStyle: styles.headerDark, 
-            width: 120 
-        },
+        // branch_name: { 
+        //     displayName: 'Cabang', 
+        //     headerStyle: styles.headerDark, 
+        //     width: 120 
+        // },
         city: { 
             displayName: 'Kota', 
             headerStyle: styles.headerDark, 

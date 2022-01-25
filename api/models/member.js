@@ -15,6 +15,10 @@ const MemberSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             required: [true, 'user id cannot be empty']
         },
+        branch_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            // required: [true, 'branch id cannot be empty']
+        },
         employee_no: {
             type: String,
             trim: true,

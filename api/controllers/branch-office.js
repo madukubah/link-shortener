@@ -5,7 +5,6 @@ const excel = require('node-excel-export');
 
 const BranchOffice = require('../models/branch-office');
 
-
 const create = async (req, res) => {
     try {
         const {
@@ -130,5 +129,5 @@ module.exports = {
     index,
     show,
     update,
-    unlink,
+    unlink
 }
