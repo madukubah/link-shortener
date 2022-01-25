@@ -80,7 +80,6 @@ const getByContractId = (req, res) => {
         })
 }
 
-
 module.exports = {
     index,
     getByContractId,

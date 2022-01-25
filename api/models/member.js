@@ -66,9 +66,6 @@ const MemberSchema = new mongoose.Schema(
             trim: true,
             required: [true, 'deposit amount cannot be empty']
         },
-        total_savings: {
-            type: Number,
-        },
         savings_type: {
             type: String,
             trim: true,

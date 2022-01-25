@@ -26,6 +26,9 @@ router.use([
     jwtAuth,
 ]);
 
+router.route('/')
+    .post(depositController.create)
+
 router.route('/importExcel')
     .post([
         uploadExcel.single('file')

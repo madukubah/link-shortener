@@ -11,6 +11,7 @@ const depositRouter = require('./api/routes/deposit');
 const userRouter = require('./api/routes/user');
 const loanContractRouter = require('./api/routes/loan-contract');
 const installmentRouter = require('./api/routes/installment');
+const branchOfficeRouter = require('./api/routes/branch-office');
 
 app.use(helmet())
 app.use(morgan('dev'))
@@ -39,6 +40,7 @@ app.use('/deposit', depositRouter);
 app.use('/user', userRouter);
 app.use('/loan-contract', loanContractRouter);
 app.use('/installment', installmentRouter);
+app.use('/branch-office', branchOfficeRouter);
 
 // handle error
 app.use((request, response, next) => {

@@ -2,9 +2,11 @@ const sanitize = require('mongo-sanitize');
 const xlxs = require('xlsx');
 const fs = require('fs');
 const excel = require('node-excel-export');
+const mongoose = require('mongoose');
 
 const Member = require('../models/member');
 const User = require('../models/user');
+const Deposit = require('../models/deposit');
 
 const serialize = (data) => {
     return {
@@ -20,9 +22,11 @@ const serialize = (data) => {
         city: data.city? data.city: null,
         join_date: data.join_date? data.join_date: null,
         end_date: data.end_date? data.end_date: null,
+        
         salary: data.salary? data.salary: null,
         deposit_amount: data.deposit_amount? data.deposit_amount: null,
-        total_savings: data.total_savings? data.total_savings: null,
+        // total_savings: data.total_savings? data.total_savings: null,
+
         savings_type: data.savings_type? data.savings_type: null,
         status: data.status? data.status: null,
     }
@@ -110,19 +114,17 @@ const index = async (req, res) => {
     if(status) {
         query['status'] = status
     }
-    return Member.paginate(query, { page: page, limit: limit })
-        .then(members => {
-            members.docs = members.docs.map( el => serialize(el) )
-            res.status(201);
-            res.json(members)
-            // res.json(members.map( el => serialize(el) ))
-        })
-        .catch(error => {
-            res.status(422);
-            res.json({
-                errors: error.messages
-            });
-        })
+    let members = await Member.paginate(query, { page: page, limit: limit })
+    members.docs = members.docs.map( el => serialize(el) )
+    for(let i=0; i< members.docs.length; i++ ){
+        let memberId = members.docs[i]._id;
+        let deposits = await Deposit.find({member_id: memberId })
+        members.docs[i].total_deposits = deposits.reduce(
+            (prev, current)=> prev + current.amount, 0
+            );
+    }
+    res.status(201);
+    res.json(members);
 }
 
 const show = (req, res) => {
@@ -217,7 +219,6 @@ const importExcel = async (req, res) => {
                 join_date: val["Tanggal bergabung"],
                 salary: val["gaji pokok"],
                 deposit_amount: val["setoran"],
-                total_savings: val["total simpanan"],
                 savings_type: val["tipe simpanan"],
                 status: val["status"] == 'aktif' ? 'active': 'nonactive' ,
             }

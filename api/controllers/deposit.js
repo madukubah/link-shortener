@@ -6,6 +6,39 @@ const excel = require('node-excel-export');
 const Deposit = require('../models/deposit');
 const Member = require('../models/member');
 
+
+const create = async (req, res) => {
+    try {
+        const {
+            member_id,
+            amount,
+            date,
+        } = req.body;
+
+        return Deposit.create({
+            member_id: member_id,
+            amount: amount,
+            date: date
+        })
+            .then(deposit => {
+                res.status(201);
+                res.json(deposit)
+            })
+            .catch(error => {
+                res.status(422);
+                res.json({
+                    errors: error.messages
+                });
+            })
+    } catch (err) {
+        res.status(500);
+        res.json({
+            errors: [err.message]
+        });
+        return;
+    }
+}
+
 const index = async (req, res) => {
     const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
@@ -55,8 +88,7 @@ const importExcel = async (req, res) => {
         let datas = fetchData.map( (val) => {
             return {
                 employee_no: val["Nomor Pegawai"],
-                amount: val["Setoran"],
-                is_deposit: val['Menyetor (Ya/Tidak)'],
+                amount: val["Setoran"]
             }
         });
         for(let i=datas.length-1; i>=0; i-- ){
@@ -94,5 +126,6 @@ const importExcel = async (req, res) => {
 module.exports = {
     index,
     getByMemberId,
-    importExcel
+    importExcel,
+    create
 }
