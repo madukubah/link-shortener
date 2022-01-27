@@ -6,6 +6,17 @@ const BranchOffice = new mongoose.Schema(
         name: {
             type: String,
             trim: true,
+            required: [true, 'name cannot be empty']
+        },
+        city: {
+            type: String,
+            trim: true,
+            required: [true, 'city cannot be empty']
+        },
+        province: {
+            type: String,
+            trim: true,
+            required: [true, 'province cannot be empty']
         },
     },
     { timestamps: { createdAt: 'createdAt', updatedAt: 'createdAt' } }

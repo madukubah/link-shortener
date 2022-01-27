@@ -18,16 +18,17 @@ const serialize = (data) => {
         employee_no: data.employee_no? data.employee_no: null,
         email: data.email? data.email: null,
         phone: data.phone? data.phone: null,
-        company_name: data.company_name? data.company_name: null,
-        city: data.city? data.city: null,
-        join_date: data.join_date? data.join_date: null,
-        end_date: data.end_date? data.end_date: null,
+        branch: data.branch? data.branch: null,
         
-        salary: data.salary? data.salary: null,
-        deposit_amount: data.deposit_amount? data.deposit_amount: null,
-        // total_savings: data.total_savings? data.total_savings: null,
+        join_date: data.join_date? data.join_date: "",
+        end_date: data.end_date? data.end_date: "",
+        
+        salary: data.salary? data.salary: 0,
+        deposit_amount: data.deposit_amount? data.deposit_amount: 0,
 
-        savings_type: data.savings_type? data.savings_type: null,
+        total_deposits: data.total_deposits? data.total_deposits: 0,
+
+        savings_type: data.savings_type? data.savings_type: "",
         status: data.status? data.status: null,
     }
 }
@@ -35,46 +36,19 @@ const serialize = (data) => {
 const create = async (req, res) => {
     try {
         const {
-            name,
-            id_number,
-            employee_no,
             email,
-            phone,
-            company_name,
             branch_id,
-            city,
-            join_date,
-            end_date,
-            salary,
-            deposit_amount,
-            total_savings,
-            savings_type,
-            status,
         } = req.body;
+        const branchOffice = await BranchOffice.findById(branch_id)
+        if(!branchOffice) throw new Error("No Branch Office");
+
         const user = await User.create({
             username: email,
             password: email.substr(0, email.indexOf("@")),
             pin: "123456"
         })
-        const branchOffice = await BranchOffice.findById(branch_id)
-        return Member.create({
-            name: name,
-            id_number: id_number,
-            user_id: user._id,
-            employee_no: employee_no,
-            email: email,
-            phone: phone,
-            company_name: company_name,
-            branch_id: branchOffice._id,
-            city: city,
-            join_date: join_date,
-            end_date: end_date,
-            salary: salary,
-            deposit_amount: deposit_amount,
-            total_savings: total_savings,
-            savings_type: savings_type,
-            status: status,
-        })
+        req.body["user_id"] = user._id;
+        return Member.create(req.body)
             .then(member => {
                 res.status(201);
                 res.json(member)
@@ -116,12 +90,13 @@ const index = async (req, res) => {
         query['status'] = status
     }
     let members = await Member.paginate(query, { page: page, limit: limit })
-    members.docs = members.docs.map( el => serialize(el) )
     for(let i=0; i< members.docs.length; i++ ){
-        let memberId = members.docs[i]._id;
-        let deposits = await Deposit.find({member_id: memberId })
+        let deposits = await Deposit.find({member_id: members.docs[i]._id })
         members.docs[i].total_deposits = deposits.reduce((prev, current)=> prev + current.amount, 0);
+
+        members.docs[i].branch = await BranchOffice.findById(members.docs[i].branch_id)
     }
+    members.docs = members.docs.map( el => serialize(el) )
     res.status(201);
     res.json(members);
 }
@@ -304,11 +279,11 @@ const exportExcel = async (req, res) => {
             headerStyle: styles.headerDark, 
             width: 120 
         },
-        // branch_name: { 
-        //     displayName: 'Cabang', 
-        //     headerStyle: styles.headerDark, 
-        //     width: 120 
-        // },
+        branch_name: { 
+            displayName: 'Cabang', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
         city: { 
             displayName: 'Kota', 
             headerStyle: styles.headerDark, 

@@ -29,12 +29,18 @@ router.use([
 router.route('/')
     .post(depositController.create)
 
+router.route('/member/range-date/:memberId')
+    .get(depositController.getByMemberIdRangeDate)
+
+router.route('/member/:memberId')
+    .get(depositController.getByMemberId)
+
 router.route('/importExcel')
     .post([
         uploadExcel.single('file')
     ],depositController.importExcel)
 
-router.route('/:memberId')
-    .get(depositController.getByMemberId)
+router.route('/:depositId')
+    .delete(depositController.unlink);
 
 module.exports = router;

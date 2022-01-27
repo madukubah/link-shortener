@@ -7,12 +7,7 @@ const BranchOffice = require('../models/branch-office');
 
 const create = async (req, res) => {
     try {
-        const {
-            name,
-        } = req.body;
-        return BranchOffice.create({
-            name: name,
-        })
+        return BranchOffice.create(req.body)
             .then(branchOffice => {
                 res.status(201);
                 res.json(branchOffice)

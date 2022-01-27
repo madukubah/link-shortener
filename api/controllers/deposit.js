@@ -10,16 +10,12 @@ const Member = require('../models/member');
 const create = async (req, res) => {
     try {
         const {
-            member_id,
-            amount,
-            date,
+            member_id
         } = req.body;
+        const member = await Member.findById(member_id)
+        if(!member) throw new Error("No Member");
 
-        return Deposit.create({
-            member_id: member_id,
-            amount: amount,
-            date: date
-        })
+        return Deposit.create(req.body)
             .then(deposit => {
                 res.status(201);
                 res.json(deposit)
@@ -78,6 +74,49 @@ const getByMemberId = (req, res) => {
         })
 }
 
+const getByMemberIdRangeDate = (req, res) => {
+    const id = req.params.memberId;
+    const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
+    const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
+    const startDate = sanitize(req.query.startDate)
+    const endDate = sanitize(req.query.endDate)
+
+    const query = { 
+        $and: [
+            {member_id: id},
+            {date: {$gte:new Date(startDate),$lte:new Date(endDate)}}
+        ]
+    }
+    return Deposit.paginate(query, { page: page, limit: limit })
+        .then(deposits => {
+            res.status(200);
+            res.json(deposits);
+        })
+        .catch(err => {
+            res.status(500);
+            res.json({
+                errors: [err.message]
+            });
+        })
+}
+
+const unlink = (req, res) => {
+    let id = req.params.depositId;
+    return Deposit.findByIdAndRemove(id)
+        .then(_ => {
+            res.status(200);
+            res.json({
+                message: "successfully deleted"
+            });
+        })
+        .catch(err => {
+            res.status(422);
+            res.json({
+                errors: [err.message]
+            });
+        })
+}
+
 const importExcel = async (req, res) => {
     if(req.file && req.file.filename) {
         const filePath = `./uploads/excels/${req.file.filename}`
@@ -87,13 +126,13 @@ const importExcel = async (req, res) => {
 
         let datas = fetchData.map( (val) => {
             return {
-                employee_no: val["Nomor Pegawai"],
+                employee_no: val["KTP"],
                 amount: val["Setoran"]
             }
         });
         for(let i=datas.length-1; i>=0; i-- ){
             
-            let employee = await Member.findOne({employee_no: datas[i].employee_no});
+            let employee = await Member.findOne({id_number: datas[i].id_number});
             if( !employee ) {
                 datas.splice(i, 1);
                 continue;
@@ -127,5 +166,7 @@ module.exports = {
     index,
     getByMemberId,
     importExcel,
-    create
+    create,
+    getByMemberIdRangeDate,
+    unlink
 }

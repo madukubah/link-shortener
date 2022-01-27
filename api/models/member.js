@@ -9,6 +9,7 @@ const MemberSchema = new mongoose.Schema(
         },
         id_number: {
             type: String,
+            unique: true,
             required: [true, 'id number cannot be empty']
         },
         user_id: {
@@ -17,7 +18,7 @@ const MemberSchema = new mongoose.Schema(
         },
         branch_id: {
             type: mongoose.Schema.Types.ObjectId,
-            // required: [true, 'branch id cannot be empty']
+            required: [true, 'branch id cannot be empty']
         },
         employee_no: {
             type: String,
@@ -36,21 +37,6 @@ const MemberSchema = new mongoose.Schema(
             type: String,
             trim: true,
             required: [true, 'phone number cannot be empty']
-        },
-        company_name: {
-            type: String,
-            trim: true,
-            required: [true, 'company name cannot be empty']
-        },
-        branch_name: {
-            type: String,
-            trim: true,
-            required: [true, 'company branch cannot be empty']
-        },
-        city: {
-            type: String,
-            trim: true,
-            required: [true, 'city cannot be empty']
         },
         join_date: {
             type: Date,
