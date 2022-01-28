@@ -1,6 +1,7 @@
 const sanitize = require('mongo-sanitize');
 
 const Installment = require('../models/installment');
+const LoanContract = require('../models/loan-contract');
 
 const create = async (req, res) => {
     try {
@@ -9,6 +10,8 @@ const create = async (req, res) => {
             amount,
             date,
         } = req.body;
+        const loanContract = await LoanContract.findById(contract_id)
+        if(!loanContract) throw new Error("No Contract");
 
         return Installment.create({
             contract_id: contract_id,
@@ -80,8 +83,35 @@ const getByContractId = (req, res) => {
         })
 }
 
+const getByContractIdRangeDate = (req, res) => {
+    const id = req.params.contractId;
+    const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
+    const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
+    const startDate = sanitize(req.query.startDate)
+    const endDate = sanitize(req.query.endDate)
+
+    const query = { 
+        $and: [
+            {contract_id: id},
+            {date: {$gte:new Date(startDate),$lte:new Date(endDate)}}
+        ]
+    }
+    return Installment.paginate(query, { page: page, limit: limit })
+        .then(deposits => {
+            res.status(200);
+            res.json(deposits);
+        })
+        .catch(err => {
+            res.status(500);
+            res.json({
+                errors: [err.message]
+            });
+        })
+}
+
 module.exports = {
     index,
     getByContractId,
+    getByContractIdRangeDate,
     create
 }

@@ -11,7 +11,10 @@ router.route('/')
     .get(installmentController.index)
     .post(installmentController.create)
 
-router.route('/:contractId')
+router.route('/contract/:contractId')
     .get(installmentController.getByContractId)
+
+router.route('/contract/range-date/:contractId')
+    .get(installmentController.getByContractIdRangeDate)
 
 module.exports = router;
