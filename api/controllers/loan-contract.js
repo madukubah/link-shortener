@@ -52,9 +52,26 @@ const index = async (req, res) => {
     if(status) {
         query['status'] = status
     }
-    return LoanContract.paginate(query, { page: page, limit: limit })
+    console.log(query);
+    let loanContractAggregate = LoanContract.aggregate([
+        {$match: query} ,
+        {
+            $lookup:
+            {
+                from: "members",
+                localField: "user_id",
+                foreignField: "user_id",
+                as: "member"
+            }
+        },
+        { $unwind: "$member" }
+        
+    ]);
+    console.log(loanContractAggregate);
+
+    return LoanContract.aggregatePaginate(loanContractAggregate, { page: page, limit: limit })
         .then(loanContracts => {
-            res.status(201);
+            res.status(200);
             res.json(loanContracts)
         })
         .catch(error => {

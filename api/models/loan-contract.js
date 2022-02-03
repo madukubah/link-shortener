@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2')
+var aggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
 const LoanContractSchema = new mongoose.Schema(
     {
@@ -55,8 +56,9 @@ LoanContractSchema.post( 'update', function (error, doc, next) {
     next();
 });
 
-LoanContractSchema.plugin(mongoosePaginate)
+LoanContractSchema.plugin(aggregatePaginate)
+// LoanContractSchema.plugin(mongoosePaginate)
 
 const schemaModel = mongoose.model('loan-contract', LoanContractSchema);
-schemaModel.paginate().then({})
+// schemaModel.paginate().then({})
 module.exports = schemaModel

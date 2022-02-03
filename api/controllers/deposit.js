@@ -2,6 +2,7 @@ const sanitize = require('mongo-sanitize');
 const xlxs = require('xlsx');
 const fs = require('fs');
 const excel = require('node-excel-export');
+const mongoose = require('mongoose');
 
 const Deposit = require('../models/deposit');
 const Member = require('../models/member');
@@ -54,15 +55,32 @@ const index = async (req, res) => {
         })
 }
 
-const getByMemberId = (req, res) => {
+const getByMemberId = async (req, res) => {
     const id = req.params.memberId;
     const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
     const status = sanitize(req.query.status)
 
+    let sum = await Deposit.aggregate(
+        [
+            { $match: { member_id: mongoose.Types.ObjectId(id) }},
+            {
+                $group: {
+                    _id: "$member_id",
+                    total: {
+                        $sum: "$amount"
+                    }
+                }
+            }
+        ],
+    );
+    
+    console.log(sum);
+
     const query = { member_id: id }
     return Deposit.paginate(query, { page: page, limit: limit })
         .then(deposits => {
+            deposits.sum = sum;
             res.status(200);
             res.json(deposits);
         })

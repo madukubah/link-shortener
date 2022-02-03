@@ -22,6 +22,7 @@ const serialize = (data) => {
         phone: data.phone? data.phone: null,
 
         branch: data.branch? data.branch: null,
+        number_of_deposits: data.number_of_deposits? data.number_of_deposits: null,
         
         join_date: data.join_date? data.join_date: "",
         end_date: data.end_date? data.end_date: "",
@@ -98,6 +99,7 @@ const index = async (req, res) => {
         members.docs[i].total_deposits = deposits.reduce((prev, current)=> prev + current.amount, 0);
 
         members.docs[i].branch = await BranchOffice.findById(members.docs[i].branch_id)
+        members.docs[i].number_of_deposits = await Deposit.count( { member_id: members.docs[i]._id })
     }
     members.docs = members.docs.map( el => serialize(el) )
     res.status(201);
