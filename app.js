@@ -12,6 +12,9 @@ const userRouter = require('./api/routes/user');
 const loanContractRouter = require('./api/routes/loan-contract');
 const installmentRouter = require('./api/routes/installment');
 const branchOfficeRouter = require('./api/routes/branch-office');
+const articleRouter = require('./api/routes/article');
+const provinceRouter = require('./api/routes/province');
+const cityRouter = require('./api/routes/city');
 
 app.use(helmet())
 app.use(morgan('dev'))
@@ -41,6 +44,9 @@ app.use('/user', userRouter);
 app.use('/loan-contract', loanContractRouter);
 app.use('/installment', installmentRouter);
 app.use('/branch-office', branchOfficeRouter);
+app.use('/article', articleRouter);
+app.use('/province', provinceRouter);
+app.use('/city', cityRouter);
 
 // handle error
 app.use((request, response, next) => {

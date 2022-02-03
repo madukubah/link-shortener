@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2')
 
-const BranchOfficeSchema = new mongoose.Schema(
+const CitySchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -12,32 +12,22 @@ const BranchOfficeSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             required: [true, 'province cannot be empty']
         },
-        city_id: {
-            type: mongoose.Schema.Types.ObjectId,
-            required: [true, 'city cannot be empty']
-        },
-        address: {
-            type: String,
-            trim: true,
-            required: [true, 'address cannot be empty']
-        },
-
     },
     { timestamps: { createdAt: 'createdAt', updatedAt: 'createdAt' } }
 );
 
-BranchOfficeSchema.post( 'save', function (error, doc, next) {
+CitySchema.post( 'save', function (error, doc, next) {
     error.messages = error.message.split(", ")
     next();
 });
 
-BranchOfficeSchema.post( 'update', function (error, doc, next) {
+CitySchema.post( 'update', function (error, doc, next) {
     error.messages = error.message.split(", ")
     next();
 });
 
-BranchOfficeSchema.plugin(mongoosePaginate)
+CitySchema.plugin(mongoosePaginate)
 
-const schemaModel = mongoose.model('branch-office', BranchOfficeSchema);
+const schemaModel = mongoose.model('city', CitySchema);
 schemaModel.paginate().then({})
 module.exports = schemaModel

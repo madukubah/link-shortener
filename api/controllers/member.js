@@ -8,6 +8,8 @@ const Member = require('../models/member');
 const User = require('../models/user');
 const Deposit = require('../models/deposit');
 const BranchOffice = require('../models/branch-office');
+const Province = require('../models/province');
+const City = require('../models/city');
 
 const serialize = (data) => {
     return {
@@ -18,6 +20,7 @@ const serialize = (data) => {
         employee_no: data.employee_no? data.employee_no: null,
         email: data.email? data.email: null,
         phone: data.phone? data.phone: null,
+
         branch: data.branch? data.branch: null,
         
         join_date: data.join_date? data.join_date: "",

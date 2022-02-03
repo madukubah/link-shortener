@@ -1,26 +1,11 @@
-const sanitize = require('mongo-sanitize');
-
-const BranchOffice = require('../models/branch-office');
-const Province = require('../models/province');
 const City = require('../models/city');
 
 const create = async (req, res) => {
     try {
-        const {
-            province_id,
-            city_id,
-        } = req.body;
-        
-        const province = await Province.findById(province_id)
-        if(!province) throw new Error("No province");
-
-        const city = await City.findById(city_id)
-        if(!city) throw new Error("No city");
-
-        return BranchOffice.create(req.body)
-            .then(branchOffice => {
+        return City.create(req.body)
+            .then(city => {
                 res.status(201);
-                res.json(branchOffice)
+                res.json(city)
             })
             .catch(error => {
                 res.status(422);
@@ -38,9 +23,6 @@ const create = async (req, res) => {
 }
 
 const index = async (req, res) => {
-    const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
-    const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
-    const status = sanitize(req.query.status)
     const search = req.query.search
 
     let query = {}
@@ -49,26 +31,20 @@ const index = async (req, res) => {
             {
                 name: new RegExp(`${search}`, 'i')
             },
-            {
-                employee_no: new RegExp(`${search}`, 'i')
-            }
         ];
     }
-    if(status) {
-        query['status'] = status
-    }
-    let branchOffices = await BranchOffice.paginate(query, { page: page, limit: limit })
+    let cities = await City.find(query)
     res.status(200);
-    res.json(branchOffices);
+    res.json(cities);
 }
 
 const show = (req, res) => {
-    const id = req.params.branchOfficeId;
-    return BranchOffice.findById(id)
-        .then(branchOffice => {
-            if (branchOffice) {
+    const id = req.params.cityId;
+    return City.findById(id)
+        .then(city => {
+            if (city) {
                 res.status(200);
-                res.json(branchOffice);
+                res.json(city);
             }
             else {
                 res.status(404);
@@ -86,14 +62,14 @@ const show = (req, res) => {
 }
 
 const update = (req, res) => {
-    let id = req.params.branchOfficeId;
+    let id = req.params.cityId;
     let newdata = req.body;
-    return BranchOffice.findByIdAndUpdate(id, newdata, { runValidators: true })
+    return City.findByIdAndUpdate(id, newdata, { runValidators: true })
         .then(result => {
             if (result) {
-                return BranchOffice.findById(result._id).then(branchOffice => {
+                return City.findById(result._id).then(city => {
                     res.status(200);
-                    res.json(branchOffice);
+                    res.json(city);
                 });
             }
             else {
@@ -112,8 +88,8 @@ const update = (req, res) => {
 }
 
 const unlink = (req, res) => {
-    let id = req.params.branchOfficeId;
-    return BranchOffice.findByIdAndRemove(id)
+    let id = req.params.cityId;
+    return City.findByIdAndRemove(id)
         .then(_ => {
             res.status(200);
             res.json({
