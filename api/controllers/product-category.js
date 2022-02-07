@@ -1,15 +1,11 @@
-const sanitize = require('mongo-sanitize');
-
-const Article = require('../models/article');
+const ProductCategory = require('../models/product-category');
 
 const create = async (req, res) => {
     try {
-        const filePath = `/uploads/articles/${req.file.filename}`;
-        req.body.image_url = filePath
-        return Article.create(req.body)
-            .then(article => {
+        return ProductCategory.create(req.body)
+            .then(productCategory => {
                 res.status(201);
-                res.json(article)
+                res.json(productCategory)
             })
             .catch(error => {
                 res.status(422);
@@ -27,8 +23,6 @@ const create = async (req, res) => {
 }
 
 const index = async (req, res) => {
-    const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
-    const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
     const search = req.query.search
 
     let query = {}
@@ -36,21 +30,21 @@ const index = async (req, res) => {
         query["$or"] = [
             {
                 name: new RegExp(`${search}`, 'i')
-            }
+            },
         ];
     }
-    let articles = await Article.paginate(query, { page: page, limit: limit })
+    let productCategories = await ProductCategory.find(query)
     res.status(200);
-    res.json(articles);
+    res.json(productCategories);
 }
 
 const show = (req, res) => {
-    const id = req.params.articleId;
-    return Article.findById(id)
-        .then(article => {
-            if (article) {
+    const id = req.params.productCategoryId;
+    return ProductCategory.findById(id)
+        .then(productCategory => {
+            if (productCategory) {
                 res.status(200);
-                res.json(article);
+                res.json(productCategory);
             }
             else {
                 res.status(404);
@@ -68,20 +62,14 @@ const show = (req, res) => {
 }
 
 const update = (req, res) => {
-    let id = req.params.articleId;
+    let id = req.params.productCategoryId;
     let newdata = req.body;
-
-    if(req.file && req.file.filename) {
-        const filePath = `./uploads/articles/${req.file.filename}`
-        newdata.image_url = filePath
-    }
-
-    return Article.findByIdAndUpdate(id, newdata, { runValidators: true })
+    return ProductCategory.findByIdAndUpdate(id, newdata, { runValidators: true })
         .then(result => {
             if (result) {
-                return Article.findById(result._id).then(article => {
+                return ProductCategory.findById(result._id).then(productCategory => {
                     res.status(200);
-                    res.json(article);
+                    res.json(productCategory);
                 });
             }
             else {
@@ -100,8 +88,8 @@ const update = (req, res) => {
 }
 
 const unlink = (req, res) => {
-    let id = req.params.articleId;
-    return Article.findByIdAndRemove(id)
+    let id = req.params.productCategoryId;
+    return ProductCategory.findByIdAndRemove(id)
         .then(_ => {
             res.status(200);
             res.json({

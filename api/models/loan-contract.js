@@ -38,7 +38,7 @@ const LoanContractSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ['draft', 'success', 'cancel'],
+            enum: ['draft', 'process', 'success', 'cancel'],
             default: 'draft',
             required: [true, 'status cannot be empty']
         },

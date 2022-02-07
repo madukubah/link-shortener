@@ -1,12 +1,12 @@
 const sanitize = require('mongo-sanitize');
 
-const Article = require('../models/article');
+const Product = require('../models/product');
 
 const create = async (req, res) => {
     try {
-        const filePath = `/uploads/articles/${req.file.filename}`;
+        const filePath = `/uploads/products/${req.file.filename}`;
         req.body.image_url = filePath
-        return Article.create(req.body)
+        return Product.create(req.body)
             .then(article => {
                 res.status(201);
                 res.json(article)
@@ -39,14 +39,14 @@ const index = async (req, res) => {
             }
         ];
     }
-    let articles = await Article.paginate(query, { page: page, limit: limit })
+    let articles = await Product.paginate(query, { page: page, limit: limit })
     res.status(200);
     res.json(articles);
 }
 
 const show = (req, res) => {
     const id = req.params.articleId;
-    return Article.findById(id)
+    return Product.findById(id)
         .then(article => {
             if (article) {
                 res.status(200);
@@ -72,14 +72,14 @@ const update = (req, res) => {
     let newdata = req.body;
 
     if(req.file && req.file.filename) {
-        const filePath = `./uploads/articles/${req.file.filename}`
+        const filePath = `./uploads/products/${req.file.filename}`
         newdata.image_url = filePath
     }
 
-    return Article.findByIdAndUpdate(id, newdata, { runValidators: true })
+    return Product.findByIdAndUpdate(id, newdata, { runValidators: true })
         .then(result => {
             if (result) {
-                return Article.findById(result._id).then(article => {
+                return Product.findById(result._id).then(article => {
                     res.status(200);
                     res.json(article);
                 });
@@ -101,7 +101,7 @@ const update = (req, res) => {
 
 const unlink = (req, res) => {
     let id = req.params.articleId;
-    return Article.findByIdAndRemove(id)
+    return Product.findByIdAndRemove(id)
         .then(_ => {
             res.status(200);
             res.json({

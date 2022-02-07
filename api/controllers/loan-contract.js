@@ -52,7 +52,6 @@ const index = async (req, res) => {
     if(status) {
         query['status'] = status
     }
-    console.log(query);
     let loanContractAggregate = LoanContract.aggregate([
         {$match: query} ,
         {

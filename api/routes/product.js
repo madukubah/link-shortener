@@ -1,12 +1,12 @@
 const express = require('express');
 const multer = require('multer');
 const router = express.Router();
-const articleController = require('../controllers/article');
+const productController = require('../controllers/product');
 const jwtAuth = require('../middlewares/auth');
 
 const storage = multer.diskStorage({
     destination: function(request, response, callback) {
-        callback(null, './uploads/articles/')
+        callback(null, './uploads/products/')
     },
     filename: function(request, response, callback) {
         const mimetype = response.mimetype.split('/')
@@ -49,16 +49,16 @@ router.use([
 ]);
 
 router.route('/')
-    .get(articleController.index)
+    .get(productController.index)
     .post([
         upload.single('file')
-    ],articleController.create);
+    ],productController.create);
 
-router.route('/:articleId')
-    .get(articleController.show)
+router.route('/:productId')
+    .get(productController.show)
     .patch([
         upload.single('file')
-    ],articleController.update)
-    .delete(articleController.unlink);
+    ],productController.update)
+    .delete(productController.unlink);
 
 module.exports = router;

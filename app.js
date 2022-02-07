@@ -15,6 +15,9 @@ const branchOfficeRouter = require('./api/routes/branch-office');
 const articleRouter = require('./api/routes/article');
 const provinceRouter = require('./api/routes/province');
 const cityRouter = require('./api/routes/city');
+const productRouter = require('./api/routes/product');
+const productCategoryRouter = require('./api/routes/product-category');
+const dashboardRouter = require('./api/routes/dashboard');
 
 app.use(helmet())
 app.use(morgan('dev'))
@@ -47,6 +50,9 @@ app.use('/branch-office', branchOfficeRouter);
 app.use('/article', articleRouter);
 app.use('/province', provinceRouter);
 app.use('/city', cityRouter);
+app.use('/product', productRouter);
+app.use('/product-category', productCategoryRouter);
+app.use('/dashboard', dashboardRouter);
 
 // handle error
 app.use((request, response, next) => {
