@@ -7,9 +7,9 @@ const create = async (req, res) => {
         const filePath = `/uploads/products/${req.file.filename}`;
         req.body.image_url = filePath
         return Product.create(req.body)
-            .then(article => {
+            .then(product => {
                 res.status(201);
-                res.json(article)
+                res.json(product)
             })
             .catch(error => {
                 res.status(422);
@@ -39,18 +39,18 @@ const index = async (req, res) => {
             }
         ];
     }
-    let articles = await Product.paginate(query, { page: page, limit: limit })
+    let products = await Product.paginate(query, { page: page, limit: limit })
     res.status(200);
-    res.json(articles);
+    res.json(products);
 }
 
 const show = (req, res) => {
-    const id = req.params.articleId;
+    const id = req.params.productId;
     return Product.findById(id)
-        .then(article => {
-            if (article) {
+        .then(product => {
+            if (product) {
                 res.status(200);
-                res.json(article);
+                res.json(product);
             }
             else {
                 res.status(404);
@@ -68,7 +68,7 @@ const show = (req, res) => {
 }
 
 const update = (req, res) => {
-    let id = req.params.articleId;
+    let id = req.params.productId;
     let newdata = req.body;
 
     if(req.file && req.file.filename) {
@@ -79,9 +79,9 @@ const update = (req, res) => {
     return Product.findByIdAndUpdate(id, newdata, { runValidators: true })
         .then(result => {
             if (result) {
-                return Product.findById(result._id).then(article => {
+                return Product.findById(result._id).then(product => {
                     res.status(200);
-                    res.json(article);
+                    res.json(product);
                 });
             }
             else {
@@ -100,7 +100,7 @@ const update = (req, res) => {
 }
 
 const unlink = (req, res) => {
-    let id = req.params.articleId;
+    let id = req.params.productId;
     return Product.findByIdAndRemove(id)
         .then(_ => {
             res.status(200);

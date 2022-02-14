@@ -23,6 +23,8 @@ const create = async (req, res) => {
 }
 
 const index = async (req, res) => {
+    const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
+    const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
     const search = req.query.search
 
     let query = {}
@@ -33,7 +35,7 @@ const index = async (req, res) => {
             },
         ];
     }
-    let cities = await City.find(query)
+    let cities = await City.paginate(query, { page: page, limit: limit })
     res.status(200);
     res.json(cities);
 }
