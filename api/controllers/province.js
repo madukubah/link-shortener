@@ -1,3 +1,4 @@
+const sanitize = require('mongo-sanitize');
 const Province = require('../models/province');
 
 const create = async (req, res) => {

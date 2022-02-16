@@ -1,3 +1,4 @@
+const sanitize = require('mongo-sanitize');
 const City = require('../models/city');
 
 const create = async (req, res) => {
@@ -38,6 +39,18 @@ const index = async (req, res) => {
     let cities = await City.paginate(query, { page: page, limit: limit })
     res.status(200);
     res.json(cities);
+}
+
+const getByProvinceId = async (req, res) => {
+    const provinceId = req.params.provinceId;
+    const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
+    const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
+
+    let query = { province_id: provinceId }
+
+    let provinces = await City.paginate(query, { page: page, limit: limit })
+    res.status(200);
+    res.json(provinces);
 }
 
 const show = (req, res) => {
@@ -111,5 +124,6 @@ module.exports = {
     index,
     show,
     update,
-    unlink
+    unlink,
+    getByProvinceId
 }

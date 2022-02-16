@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+const User = require('../../models/user');
 const bcrypt = require('bcrypt');
-
 
 const signIn = async (req, res) => {
     try {
@@ -13,7 +12,7 @@ const signIn = async (req, res) => {
         if (!(username && password)) {
             res.status(400);
             res.json({
-                errors: ["All input is required"]
+                message: ["All input is required"]
             })
             return
         }
@@ -38,19 +37,46 @@ const signIn = async (req, res) => {
         }
         res.status(400);
         res.json({
-            errors: ["Invalid Credentials"]
+            message: "Invalid Credentials"
         })
         return;
     } catch (err) {
         res.status(500);
         res.json({
-            errors: [err.message]
+            message: err.message
         });
         return;
     }
 }
 
+const update = async (req, res) => {
+    let id = req.user.id;
+    console.log(req.user);
+    let newdata = req.body;
+    return User.findByIdAndUpdate(id, newdata, { runValidators: true })
+        .then(result => {
+            if (result) {
+                return User.findById(result._id).then(member => {
+                    res.status(200);
+                    res.json(member);
+                });
+            }
+            else {
+                res.status(404);
+                res.json({
+                    errors: ["Not Found"]
+                });
+            }
+        })
+        .catch(error => {
+            res.status(422);
+            res.json({
+                errors: [error.message]
+            });
+        })
+}
+
 module.exports = {
-    signUp,
     signIn,
+    update
 }

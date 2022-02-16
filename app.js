@@ -19,6 +19,10 @@ const productRouter = require('./api/routes/product');
 const productCategoryRouter = require('./api/routes/product-category');
 const dashboardRouter = require('./api/routes/dashboard');
 
+const mobileAuthRouter = require('./api/routes/mobile/auth');
+const mobileDepositRouter = require('./api/routes/mobile/deposit');
+
+
 app.use(helmet())
 app.use(morgan('dev'))
 app.use(express.urlencoded({ extended: false }))
@@ -53,6 +57,9 @@ app.use('/city', cityRouter);
 app.use('/product', productRouter);
 app.use('/product-category', productCategoryRouter);
 app.use('/dashboard', dashboardRouter);
+
+app.use('/mobile/auth', mobileAuthRouter);
+app.use('/mobile/deposit', mobileDepositRouter);
 
 // handle error
 app.use((request, response, next) => {
