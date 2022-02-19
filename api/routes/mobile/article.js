@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const router = express.Router();
-const depositController = require('../../controllers/mobile/deposit');
+const articleController = require('../../controllers/mobile/article');
 const jwtAuth = require('../../middlewares/auth');
 
 router.use([
@@ -9,10 +9,9 @@ router.use([
 ]);
 
 router.route('/')
-    .get(depositController.getByUserId)
+    .get(articleController.index)
 
-
-router.route('/balance')
-    .get(depositController.sumOfDeposit)
+router.route('/:articleId')
+    .get(articleController.show)
 
 module.exports = router;

@@ -66,7 +66,6 @@ const index = async (req, res) => {
         { $unwind: "$member" }
         
     ]);
-    console.log(loanContractAggregate);
 
     return LoanContract.aggregatePaginate(loanContractAggregate, { page: page, limit: limit })
         .then(loanContracts => {
