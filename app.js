@@ -24,6 +24,8 @@ const mobileDepositRouter = require('./api/routes/mobile/deposit');
 const mobileArticleRouter = require('./api/routes/mobile/article');
 const mobileLoanContractRouter = require('./api/routes/mobile/loan-contract');
 const mobileInstallmentRouter = require('./api/routes/mobile/installment');
+const mobileProductCategoryRouter = require('./api/routes/mobile/product-category');
+const mobileProductRouter = require('./api/routes/mobile/product');
 
 
 app.use(helmet())
@@ -66,6 +68,8 @@ app.use('/mobile/deposit', mobileDepositRouter);
 app.use('/mobile/article', mobileArticleRouter);
 app.use('/mobile/loan-contract', mobileLoanContractRouter);
 app.use('/mobile/installment', mobileInstallmentRouter);
+app.use('/mobile/product-category', mobileProductCategoryRouter);
+app.use('/mobile/product', mobileProductRouter);
 
 // handle error
 app.use((request, response, next) => {
