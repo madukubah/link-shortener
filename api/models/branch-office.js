@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2')
+const aggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
 const BranchOfficeSchema = new mongoose.Schema(
     {
@@ -36,8 +37,9 @@ BranchOfficeSchema.post( 'update', function (error, doc, next) {
     next();
 });
 
-BranchOfficeSchema.plugin(mongoosePaginate)
+BranchOfficeSchema.plugin(aggregatePaginate)
+// BranchOfficeSchema.plugin(mongoosePaginate)
 
 const schemaModel = mongoose.model('branch-office', BranchOfficeSchema);
-schemaModel.paginate().then({})
+// schemaModel.paginate().then({})
 module.exports = schemaModel

@@ -48,18 +48,49 @@ const index = async (req, res) => {
         query["$or"] = [
             {
                 name: new RegExp(`${search}`, 'i')
-            },
-            {
-                employee_no: new RegExp(`${search}`, 'i')
             }
         ];
     }
-    if(status) {
-        query['status'] = status
-    }
-    let branchOffices = await BranchOffice.paginate(query, { page: page, limit: limit })
-    res.status(200);
-    res.json(branchOffices);
+
+    // let branchOffices = await BranchOffice.paginate(query, { page: page, limit: limit })
+    // res.status(200);
+    // res.json(branchOffices);
+    let branchOfficeAggregate = BranchOffice.aggregate([
+        {$match: query} ,
+        {
+            $lookup:
+            {
+                from: "provinces",
+                localField: "province_id",
+                foreignField: "_id",
+                as: "province"
+            }
+        },
+        { $unwind: "$province" },
+        {
+            $lookup:
+            {
+                from: "cities",
+                localField: "city_id",
+                foreignField: "_id",
+                as: "city"
+            }
+        },
+        { $unwind: "$city" },
+        
+    ]);
+
+    return BranchOffice.aggregatePaginate(branchOfficeAggregate, { page: page, limit: limit })
+        .then(branchOffices => {
+            res.status(200);
+            res.json(branchOffices)
+        })
+        .catch(error => {
+            res.status(422);
+            res.json({
+                errors: [error.messages]
+            });
+        })
 }
 
 const show = (req, res) => {

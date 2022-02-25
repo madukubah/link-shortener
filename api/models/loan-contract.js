@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2')
-var aggregatePaginate = require("mongoose-aggregate-paginate-v2");
+const aggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
 const LoanContractSchema = new mongoose.Schema(
     {
