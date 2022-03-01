@@ -4,8 +4,12 @@ const Product = require('../models/product');
 
 const create = async (req, res) => {
     try {
-        const filePath = `/uploads/products/${req.file.filename}`;
+        const filePath = `/uploads/products/${req.files.file[0].filename}`;
         req.body.image_url = filePath
+        if( req.body.is_highlight ){
+            const bannerFilePath = `/uploads/products/${req.files.banner[0].filename}`;
+            req.body.banner_url = bannerFilePath
+        }
         return Product.create(req.body)
             .then(product => {
                 res.status(201);
@@ -71,10 +75,15 @@ const update = (req, res) => {
     let id = req.params.productId;
     let newdata = req.body;
 
-    if(req.file && req.file.filename) {
-        const filePath = `./uploads/products/${req.file.filename}`
+    if(req.files && req.files.file[0].filename) {
+        const filePath = `/uploads/products/${req.files.file[0].filename}`;
         newdata.image_url = filePath
+        if( req.body.is_highlight ){
+            const bannerFilePath = `/uploads/products/${req.files.banner[0].filename}`;
+            req.body.banner_url = bannerFilePath
+        }
     }
+
 
     return Product.findByIdAndUpdate(id, newdata, { runValidators: true })
         .then(result => {

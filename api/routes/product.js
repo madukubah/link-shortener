@@ -51,13 +51,15 @@ router.use([
 router.route('/')
     .get(productController.index)
     .post([
-        upload.single('file')
+        // upload.single('file')
+        upload.fields([{name: 'banner', maxCount: 1}, {name: 'file', maxCount: 1}])
     ],productController.create);
 
 router.route('/:productId')
     .get(productController.show)
     .patch([
-        upload.single('file')
+        upload.fields([{name: 'banner', maxCount: 1}, {name: 'file', maxCount: 1}])
+        // upload.single('file')
     ],productController.update)
     .delete(productController.unlink);
 

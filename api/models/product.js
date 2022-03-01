@@ -29,6 +29,16 @@ const ProductSchema = new mongoose.Schema(
             type: Number,
             trim: true,
         },
+        is_highlight: {
+            type: Boolean,
+            default: false,
+        },
+        banner_url: {
+            type: String,
+            trim: true,
+            required: [true, 'image cannot be empty'],
+            default:"/uploads/products/default.jpg"
+        },
         status: {
             type: String,
             enum: ['active', 'nonactive'],
