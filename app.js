@@ -26,6 +26,8 @@ const mobileLoanContractRouter = require('./api/routes/mobile/loan-contract');
 const mobileInstallmentRouter = require('./api/routes/mobile/installment');
 const mobileProductCategoryRouter = require('./api/routes/mobile/product-category');
 const mobileProductRouter = require('./api/routes/mobile/product');
+const saleOrderRouter = require('./api/routes/mobile/sale-order');
+const saleOrderLineRouter = require('./api/routes/mobile/sale-orderline');
 
 
 app.use(helmet())
@@ -70,6 +72,8 @@ app.use('/mobile/loan-contract', mobileLoanContractRouter);
 app.use('/mobile/installment', mobileInstallmentRouter);
 app.use('/mobile/product-category', mobileProductCategoryRouter);
 app.use('/mobile/product', mobileProductRouter);
+app.use('/mobile/sale', saleOrderRouter);
+app.use('/mobile/sale-orderline', saleOrderLineRouter);
 
 // handle error
 app.use((request, response, next) => {

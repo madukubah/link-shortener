@@ -18,7 +18,7 @@ const MemberSchema = new mongoose.Schema(
         },
         branch_id: {
             type: mongoose.Schema.Types.ObjectId,
-            required: [true, 'branch id cannot be empty']
+            // required: [true, 'branch id cannot be empty']
         },
         employee_no: {
             type: String,
@@ -59,7 +59,8 @@ const MemberSchema = new mongoose.Schema(
         savings_type: {
             type: String,
             trim: true,
-            required: [true, 'savings type cannot be empty']
+            required: [true, 'savings type cannot be empty'],
+            default: 'wajib'
         },
         status: {
             type: String,

@@ -2,6 +2,7 @@ const sanitize = require('mongo-sanitize');
 const mongoose = require('mongoose');
 
 const LoanContract = require('../../models/loan-contract');
+const SummaryCut = require('../../models/summary-cut');
 
 const create = async (req, res) => {
     try {
@@ -25,8 +26,15 @@ const create = async (req, res) => {
             date: date
         })
             .then(loanContract => {
-                res.status(201);
-                res.json(loanContract)
+                return SummaryCut.create({
+                    user_id: user_id,
+                    ref_id: loanContract._id,
+                    type: 'loan',
+                    amount: ( amount - reduced ) / period,
+                }).then( summaryCut => {
+                    res.status(201);
+                    res.json(loanContract)
+                })
             })
             .catch(error => {
                 res.status(422);

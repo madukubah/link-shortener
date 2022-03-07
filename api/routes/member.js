@@ -23,9 +23,9 @@ const uploadExcel = multer({
 })
 
 
-router.use([
-    jwtAuth,
-]);
+// router.use([
+//     jwtAuth,
+// ]);
 
 router.route('/')
     .get(memberController.index)
@@ -33,6 +33,9 @@ router.route('/')
 
 router.route('/exportExcel')
     .get(memberController.exportExcel)
+
+router.route('/exportExcelTemplate')
+    .get(memberController.exportExcelTemplate)
 
 router.route('/:memberId')
     .get(memberController.show)

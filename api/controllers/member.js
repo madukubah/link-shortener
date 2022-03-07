@@ -4,7 +4,9 @@ const fs = require('fs');
 const excel = require('node-excel-export');
 const mongoose = require('mongoose');
 
+
 const Member = require('../models/member');
+const SummaryCut = require('../models/summary-cut');
 const User = require('../models/user');
 const Deposit = require('../models/deposit');
 const BranchOffice = require('../models/branch-office');
@@ -54,8 +56,15 @@ const create = async (req, res) => {
         req.body["user_id"] = user._id;
         return Member.create(req.body)
             .then(member => {
-                res.status(201);
-                res.json(member)
+                return SummaryCut.create({
+                    user_id: user._id,
+                    ref_id: member._id,
+                    type: 'deposit',
+                    amount: member.deposit_amount,
+                }).then( summaryCut => {
+                    res.status(201);
+                    res.json(member)
+                })
             })
             .catch(error => {
                 user.remove();
@@ -185,24 +194,20 @@ const importExcel = async (req, res) => {
         const wbRead = xlxs.readFile(filePath)
         const sheetNameLists = wbRead.SheetNames
         const fetchData = xlxs.utils.sheet_to_json(wbRead.Sheets[sheetNameLists[0]])
-
         let datas = fetchData.map( (val) => {
             return {
-                name: val["nama"],
-                employee_no: val["nomor pegawai"],
-                email: val["email"],
-                phone: val["nomor telepon"],
-                company_name: val["perusahaan"],
-                branch_name: val["cabang"],
-                city: val["kota"],
-                join_date: val["Tanggal bergabung"],
-                salary: val["gaji pokok"],
-                deposit_amount: val["setoran"],
-                savings_type: val["tipe simpanan"],
-                status: val["status"] == 'aktif' ? 'active': 'nonactive' ,
+                name: val["Nama"],
+                id_number: val["KTP"],
+                employee_no: val["Nomor Pegawai"],
+                email: val["Email"],
+                phone: val["Nomor Telepon"],
+                join_date: val["Tanggal Bergabung"],
+                end_date: val["Tanggal Selesai Kontrak"],
+                branch: val["Cabang"],
+                salary: val["Gaji Pokok"],
+                deposit_amount: val["Setoran Simpanan"],
             }
         });
-        console.log(datas);
         for(let i=0; i< datas.length; i++ ){
             let email = datas[i].email;
             let user = await User.create({
@@ -211,10 +216,16 @@ const importExcel = async (req, res) => {
                 pin: "123456"
             })
             datas[i].user_id = user._id;
+            let branch = await BranchOffice.findOne(
+                {
+                    name: new RegExp(`${datas[i].branch}`, 'i')
+                }
+            )
+            if( branch )
+                datas[i].branch_id = branch.id;
         }
 
         if(fs.existsSync(filePath)) fs.unlinkSync(filePath)
-
         return Member.insertMany(datas)
             .then(members => {
                 res.status(201);
@@ -233,7 +244,145 @@ const importExcel = async (req, res) => {
     });
     return 
 }
+const exportExcelTemplate = async (req, res) => {
+    // You can define styles as json object
+    const styles = {
+        headerDark: {
+            font: {
+                color: {
+                    rgb: '00000000'
+                },
+                sz: 12,
+            }
+        },
+    };
+    
+    //Here you specify the export structure
+    const specification = {
+        name: { 
+            displayName: 'Nama', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        id_number: { 
+            displayName: 'KTP', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        employee_no: { 
+            displayName: 'Nomor Pegawai', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        email: { 
+            displayName: 'Email', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        phone: { 
+            displayName: 'Nomor Telepon', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        join_date: { 
+            displayName: 'Tanggal bergabung', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        end_date: { 
+            displayName: 'Tanggal Selesai Kontrak', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        branch: { 
+            displayName: 'Cabang', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        salary: { 
+            displayName: 'Gaji Pokok', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        deposit_amount: { 
+            displayName: 'Setoran Simpanan', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
 
+
+        _a: { 
+            displayName: '-', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        branch_name: { 
+            displayName: 'Cabang', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        province_name: { 
+            displayName: 'Provinsi', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        city_name: { 
+            displayName: 'Kota', 
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+        address: { 
+            displayName: 'Alamat',
+            headerStyle: styles.headerDark, 
+            width: 120 
+        },
+    }
+
+    let branchOfficeAggregate = await BranchOffice.aggregate([
+        {
+            $lookup:
+            {
+                from: "provinces",
+                localField: "province_id",
+                foreignField: "_id",
+                as: "province"
+            }
+        },
+        { $unwind: "$province" },
+        {
+            $lookup:
+            {
+                from: "cities",
+                localField: "city_id",
+                foreignField: "_id",
+                as: "city"
+            }
+        },
+        { $unwind: "$city" },
+    ]);
+    branchOfficeAggregate = branchOfficeAggregate.map(val => {
+        val.branch_name = val.name
+        val.province_name = val.province.name
+        val.city_name = val.city.name
+        delete val.name;
+        delete val.city;
+        return val
+    })
+
+    const report = excel.buildExport(
+        [ 
+            {
+                name: 'Template Anggota',
+                specification: specification,
+                data: branchOfficeAggregate
+            }
+        ]
+    );
+    
+    // You can then return this straight
+    res.attachment('Template Anggota.xlsx'); // This is sails.js specific (in general you need to set headers)
+    return res.send(report);
+}
 const exportExcel = async (req, res) => {
     // You can define styles as json object
     const styles = {
@@ -279,21 +428,6 @@ const exportExcel = async (req, res) => {
             headerStyle: styles.headerDark, 
             width: 120 
         },
-        company_name: { 
-            displayName: 'Perusahaan', 
-            headerStyle: styles.headerDark, 
-            width: 120 
-        },
-        branch_name: { 
-            displayName: 'Cabang', 
-            headerStyle: styles.headerDark, 
-            width: 120 
-        },
-        city: { 
-            displayName: 'Kota', 
-            headerStyle: styles.headerDark, 
-            width: 120 
-        },
         deposit_amount: { 
             displayName: 'Setoran Simpanan', 
             headerStyle: styles.headerDark, 
@@ -318,7 +452,6 @@ const exportExcel = async (req, res) => {
     const dataset = await Member.find(
         {status: "active"}
     );
-    
     const report = excel.buildExport(
         [ 
             {
@@ -341,5 +474,6 @@ module.exports = {
     update,
     unlink,
     importExcel,
-    exportExcel
+    exportExcel,
+    exportExcelTemplate
 }

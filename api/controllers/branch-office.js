@@ -52,9 +52,6 @@ const index = async (req, res) => {
         ];
     }
 
-    // let branchOffices = await BranchOffice.paginate(query, { page: page, limit: limit })
-    // res.status(200);
-    // res.json(branchOffices);
     let branchOfficeAggregate = BranchOffice.aggregate([
         {$match: query} ,
         {
@@ -77,7 +74,6 @@ const index = async (req, res) => {
             }
         },
         { $unwind: "$city" },
-        
     ]);
 
     return BranchOffice.aggregatePaginate(branchOfficeAggregate, { page: page, limit: limit })
