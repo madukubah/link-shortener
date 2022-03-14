@@ -18,6 +18,8 @@ const cityRouter = require('./api/routes/city');
 const productRouter = require('./api/routes/product');
 const productCategoryRouter = require('./api/routes/product-category');
 const dashboardRouter = require('./api/routes/dashboard');
+const summaryCutRouter = require('./api/routes/summary-cut');
+const saleOrderCutRouter = require('./api/routes/sale-order');
 
 const mobileAuthRouter = require('./api/routes/mobile/auth');
 const mobileDepositRouter = require('./api/routes/mobile/deposit');
@@ -64,6 +66,8 @@ app.use('/city', cityRouter);
 app.use('/product', productRouter);
 app.use('/product-category', productCategoryRouter);
 app.use('/dashboard', dashboardRouter);
+app.use('/summary-cut', summaryCutRouter);
+app.use('/sale', saleOrderCutRouter);
 
 app.use('/mobile/auth', mobileAuthRouter);
 app.use('/mobile/deposit', mobileDepositRouter);

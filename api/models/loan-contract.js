@@ -31,6 +31,11 @@ const LoanContractSchema = new mongoose.Schema(
             trim: true,
             defaut: 0
         },
+        instalment_per_period: {
+            type: Number,
+            trim: true,
+            defaut: 0
+        },
         date: {
             type: Date,
             required: [true, 'date cannot be empty'],
@@ -38,7 +43,7 @@ const LoanContractSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ['draft', 'process', 'success', 'cancel'],
+            enum: ['draft', 'process', 'success', 'done', 'cancel'],
             default: 'draft',
             required: [true, 'status cannot be empty']
         },

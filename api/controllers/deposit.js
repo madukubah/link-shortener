@@ -75,8 +75,6 @@ const getByMemberId = async (req, res) => {
         ],
     );
     
-    console.log(sum);
-
     const query = { member_id: id }
     return Deposit.paginate(query, { page: page, limit: limit })
         .then(deposits => {
@@ -144,7 +142,7 @@ const importExcel = async (req, res) => {
 
         let datas = fetchData.map( (val) => {
             return {
-                employee_no: val["KTP"],
+                id_number: val["KTP"],
                 amount: val["Setoran"]
             }
         });
@@ -158,7 +156,7 @@ const importExcel = async (req, res) => {
             datas[i]["member_id"] = employee._id
             datas[i]["date"] = Date.now()
         }
-        console.log(datas);
+        // console.log(datas);
         if(fs.existsSync(filePath)) fs.unlinkSync(filePath)
 
         return Deposit.insertMany(datas)

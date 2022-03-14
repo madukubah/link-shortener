@@ -27,6 +27,10 @@ const SaleOrderSchema = new mongoose.Schema(
             enum: ['cash', 'transfer', 'salary_cut'],
             required: [true, 'payment_method cannot be empty']
         },
+        total_amount: {
+            type: Number,
+            trim: true,
+        },
         status: {
             type: String,
             enum: ['draft', 'process', 'done'],

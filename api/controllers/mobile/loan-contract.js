@@ -23,6 +23,7 @@ const create = async (req, res) => {
             period: period,
             amount: amount,
             reduced: reduced,
+            instalment_per_period: (amount - reduced)/ period,
             date: date
         })
             .then(loanContract => {

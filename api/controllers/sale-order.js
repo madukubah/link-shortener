@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const sanitize = require('mongo-sanitize');
-const SaleOrder = require('../../models/sale-order');
-const SaleOrderLine = require('../../models/sale-orderline');
+const SaleOrder = require('../models/sale-order');
+const SaleOrderLine = require('../models/sale-orderline');
 
 const create = async (req, res) => {
     try {
