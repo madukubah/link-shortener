@@ -21,9 +21,9 @@ const uploadExcel = multer({
         fileSize: 1024 * 1024 * 25
     }
 })
-// router.use([
-//     jwtAuth,
-// ]);
+router.use([
+    jwtAuth,
+]);
 
 router.route('/')
     .get(summaryCutController.exportExcel)
