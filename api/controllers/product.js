@@ -88,9 +88,12 @@ const update = (req, res) => {
     let id = req.params.productId;
     let newdata = req.body;
     console.log(req.files)
-    if(req.files && req.files.file[0].filename) {
+    if(req.files && req.files.file) {
         const filePath = `/uploads/products/${req.files.file[0].filename}`;
         newdata.image_url = filePath
+    }
+
+    if(req.files && req.files.banner) {
         if( req.body.is_highlight ){
             const bannerFilePath = `/uploads/products/${req.files.banner[0].filename}`;
             req.body.banner_url = bannerFilePath
