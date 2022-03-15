@@ -166,13 +166,13 @@ const update = (req, res) => {
 
 const unlink = (req, res) => {
     let id = req.params.memberId;
-    if (id == req.user.id) {
-        res.status(422);
-        res.json({
-            errors: ["Cannot delete your own data"]
-        });
-        return;
-    }
+    // if (id == req.user.id) {
+    //     res.status(422);
+    //     res.json({
+    //         errors: ["Cannot delete your own data"]
+    //     });
+    //     return;
+    // }
     return Member.findByIdAndRemove(id)
         .then(_ => {
             res.status(200);

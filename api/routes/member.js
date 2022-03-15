@@ -28,22 +28,23 @@ const uploadExcel = multer({
 // ]);
 
 router.route('/')
-    .get(memberController.index)
-    .post(memberController.create);
+    .get([jwtAuth],memberController.index)
+    .post([jwtAuth],memberController.create);
 
 router.route('/exportExcel')
-    .get(memberController.exportExcel)
+    .get([jwtAuth],memberController.exportExcel)
 
 router.route('/exportExcelTemplate')
     .get(memberController.exportExcelTemplate)
 
 router.route('/:memberId')
-    .get(memberController.show)
-    .patch(memberController.update)
-    .delete(memberController.unlink);
+    .get([jwtAuth],memberController.show)
+    .patch([jwtAuth],memberController.update)
+    .delete([jwtAuth],memberController.unlink);
 
 router.route('/importExcel')
     .post([
+        jwtAuth,
         uploadExcel.single('file')
     ],memberController.importExcel)
 module.exports = router;
