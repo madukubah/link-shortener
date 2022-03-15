@@ -1,4 +1,5 @@
 const sanitize = require('mongo-sanitize');
+const mongoose = require('mongoose');
 
 const Product = require('../models/product');
 
@@ -43,38 +44,50 @@ const index = async (req, res) => {
             }
         ];
     }
-    let products = await Product.paginate(query, { page: page, limit: limit })
+    let productAggregate = Product.aggregate([
+        {$match: query} ,
+        {
+            $lookup:
+            {
+                from: "product-categories",
+                localField: "product_category_id",
+                foreignField: "_id",
+                as: "product_category"
+            }
+        },
+        { $unwind: "$product_category" },
+    ]);
+
+    let products = await Product.aggregatePaginate(productAggregate, { page: page, limit: limit })
     res.status(200);
     res.json(products);
 }
 
-const show = (req, res) => {
+const show = async (req, res) => {
     const id = req.params.productId;
-    return Product.findById(id)
-        .then(product => {
-            if (product) {
-                res.status(200);
-                res.json(product);
+
+    let productAggregate = await Product.aggregate([
+        {$match: {_id : mongoose.Types.ObjectId(id) }} ,
+        {
+            $lookup:
+            {
+                from: "product-categories",
+                localField: "product_category_id",
+                foreignField: "_id",
+                as: "product_category"
             }
-            else {
-                res.status(404);
-                res.json({
-                    errors: ["Not Found"]
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500);
-            res.json({
-                errors: [err.message]
-            });
-        })
+        },
+        { $unwind: "$product_category" },
+    ]);
+    res.status(200);
+    res.json(productAggregate.length > 0 ? productAggregate[0] : {} );
+    return
 }
 
 const update = (req, res) => {
     let id = req.params.productId;
     let newdata = req.body;
-
+    console.log(req.files)
     if(req.files && req.files.file[0].filename) {
         const filePath = `/uploads/products/${req.files.file[0].filename}`;
         newdata.image_url = filePath
