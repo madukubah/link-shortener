@@ -164,7 +164,7 @@ const update = (req, res) => {
         })
 }
 
-const unlink = (req, res) => {
+const unlink = async (req, res) => {
     let id = req.params.memberId;
     // if (id == req.user.id) {
     //     res.status(422);
@@ -173,6 +173,8 @@ const unlink = (req, res) => {
     //     });
     //     return;
     // }
+    let member = await Member.findById(id)
+    await User.findByIdAndRemove(member.user_id)
     return Member.findByIdAndRemove(id)
         .then(_ => {
             res.status(200);
@@ -285,7 +287,7 @@ const exportExcelTemplate = async (req, res) => {
             width: 120 
         },
         join_date: { 
-            displayName: 'Tanggal bergabung', 
+            displayName: 'Tanggal Bergabung', 
             headerStyle: styles.headerDark, 
             width: 120 
         },

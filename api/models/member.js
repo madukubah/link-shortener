@@ -40,11 +40,13 @@ const MemberSchema = new mongoose.Schema(
         },
         join_date: {
             type: Date,
-            required: [true, 'join date cannot be empty']
+            // required: [true, 'join date cannot be empty']
+            default: Date.now()
         },
         end_date: {
             type: Date,
-            required: [true, 'end date cannot be empty']
+            // required: [true, 'end date cannot be empty']
+            default: Date.now()
         },
         salary: {
             type: Number,
