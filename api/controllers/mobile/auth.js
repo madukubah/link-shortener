@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../../models/user');
+const Member = require('../../models/member');
 const bcrypt = require('bcrypt');
 
 const signIn = async (req, res) => {
@@ -19,10 +20,12 @@ const signIn = async (req, res) => {
         const user = await User.findOne({ username });
 
         if (user && (await bcrypt.compare(password, user.password))) {
+            const member = await Member.findOne({ user_id: user.id});
             const token = jwt.sign(
                 {
                     id: user._id,
                     username: user.username,
+                    member: member
                 },
                 process.env.JWT_KEY,
                 {
