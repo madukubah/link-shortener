@@ -19,6 +19,10 @@ const UserSchema = new mongoose.Schema(
             trim: true,
             required: true,
         },
+        is_new: {
+            type: Boolean,
+            default: true,
+        },
         token: {
             type: String,
         },

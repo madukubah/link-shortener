@@ -31,7 +31,8 @@ const signIn = async (req, res) => {
             );
             res.status(200);
             res.json({
-                token: token
+                token: token,
+                is_new : user.is_new
             })
             return;
         }
@@ -56,9 +57,13 @@ const update = async (req, res) => {
     return User.findByIdAndUpdate(id, newdata, { runValidators: true })
         .then(result => {
             if (result) {
-                return User.findById(result._id).then(member => {
+                return User.findById(result._id).then(user => {
+                    if(req.body.password || req.body.pin){
+                        user.is_new = false
+                        user.save()
+                    }
                     res.status(200);
-                    res.json(member);
+                    res.json(user);
                 });
             }
             else {
