@@ -16,7 +16,7 @@ const index = async (req, res) => {
             }
         ];
     }
-    let articles = await Article.paginate(query, { page: page, limit: limit })
+    let articles = await Article.paginate({status: "publish"}, { page: page, limit: limit })
     res.status(200);
     res.json(articles);
 }
