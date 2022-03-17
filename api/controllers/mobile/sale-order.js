@@ -34,46 +34,38 @@ const create = async (req, res) => {
 const index = async (req, res) => {
     const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
-    const search = req.query.search
+    const userId = req.user.id;
 
-    let query = {}
-    if(search) {
-        query["$or"] = [
-            {
-                name: new RegExp(`${search}`, 'i')
-            },
-        ];
-    }
     let saleOrderAggregate = SaleOrder.aggregate([
-        {$match: query} ,
-        {
-            $lookup:
-            {
-                from: "sale-orderlines",
-                let: { "sale_id": "$_id" },
-                pipeline :[
-                    {
-                        $match: { 
-                            $expr: { $eq: ["$$sale_id", "$sale_id"] }
-                        }
-                    },
-                    {
+        { $match: { user_id: mongoose.Types.ObjectId(userId) }},
+        // {
+        //     $lookup:
+        //     {
+        //         from: "sale-orderlines",
+        //         let: { "sale_id": "$_id" },
+        //         as: "orderlines",
+        //         pipeline :[
+        //             {
+        //                 $match: { 
+        //                     $expr: { $eq: ["$$sale_id", "$sale_id"] }
+        //                 }
+        //             },
+        //             {
                         
-                        $lookup:
-                        {
-                            from: "products",
-                            localField: "product_id",
-                            foreignField: "_id",
-                            as: "product",
+        //                 $lookup:
+        //                 {
+        //                     from: "products",
+        //                     localField: "product_id",
+        //                     foreignField: "_id",
+        //                     as: "product",
 
-                        }       
-                    },
-                    { $unwind: "$product" },
-                ],
-                as: "orderlines",
+        //                 }       
+        //             },
+        //             { $unwind: "$product" },
+        //         ],
 
-            }
-        },
+        //     }
+        // },
     ]);
     let saleOrders = await SaleOrder.aggregatePaginate(saleOrderAggregate, { page: page, limit: limit })
     res.status(200);
@@ -95,22 +87,34 @@ const show = async (req, res) => {
                             $expr: { $eq: ["$$sale_id", "$sale_id"] }
                         }
                     },
-                    {
+                    // {
                         
-                        $lookup:
-                        {
-                            from: "products",
-                            localField: "product_id",
-                            foreignField: "_id",
-                            as: "product",
+                    //     $lookup:
+                    //     {
+                    //         from: "products",
+                    //         localField: "product_id",
+                    //         foreignField: "_id",
+                    //         as: "product",
 
-                        }       
-                    },
-                    { $unwind: "$product" },
+                    //     }       
+                    // },
+                    // { $unwind: "$product" },
                 ],
                 as: "orderlines",
 
             }
+        },
+        { $unwind: "$orderlines" },
+        {
+            
+            $lookup:
+            {
+                from: "products",
+                localField: "orderlines.product_id",
+                foreignField: "_id",
+                as: "product",
+
+            }       
         },
     ]);
 
