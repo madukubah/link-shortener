@@ -6,7 +6,6 @@ const index = async (req, res) => {
     const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
     const search = req.query.search
-    const categoryId = req.query.categoryId
 
     let query = {}
     if(search) {
@@ -16,41 +15,44 @@ const index = async (req, res) => {
             }
         ];
     }
-    
-    if(categoryId) {
-        query["$or"] = [
+    let productAggregate = Product.aggregate([
+        {$match: query} ,
+        {
+            $lookup:
             {
-                product_category_id: categoryId
+                from: "product-categories",
+                localField: "product_category_id",
+                foreignField: "_id",
+                as: "product_category"
             }
-        ];
-    }
+        },
+        { $unwind: "$product_category" },
+    ]);
 
-    let products = await Product.paginate(query, { page: page, limit: limit })
+    let products = await Product.aggregatePaginate(productAggregate, { page: page, limit: limit })
     res.status(200);
     res.json(products);
 }
 
-const show = (req, res) => {
+const show = async (req, res) => {
     const id = req.params.productId;
-    return Product.findById(id)
-        .then(product => {
-            if (product) {
-                res.status(200);
-                res.json(product);
+
+    let productAggregate = await Product.aggregate([
+        {$match: {_id : mongoose.Types.ObjectId(id) }} ,
+        {
+            $lookup:
+            {
+                from: "product-categories",
+                localField: "product_category_id",
+                foreignField: "_id",
+                as: "product_category"
             }
-            else {
-                res.status(404);
-                res.json({
-                    message: ["Not Found"]
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500);
-            res.json({
-                message: err.message
-            });
-        })
+        },
+        { $unwind: "$product_category" },
+    ]);
+    res.status(200);
+    res.json(productAggregate.length > 0 ? productAggregate[0] : {} );
+    return
 }
 
 
