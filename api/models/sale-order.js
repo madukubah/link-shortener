@@ -31,6 +31,11 @@ const SaleOrderSchema = new mongoose.Schema(
             type: Number,
             trim: true,
         },
+        proof_tf_image_url: {
+            type: String,
+            trim: true,
+            default: ''
+        },
         status: {
             type: String,
             enum: ['draft', 'process', 'done', 'cancel'],

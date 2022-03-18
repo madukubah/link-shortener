@@ -113,6 +113,12 @@ const show = async (req, res) => {
 const update = (req, res) => {
     let id = req.params.saleOrderId;
     let newdata = req.body;
+
+    if(req.file && req.file.filename) {
+        const filePath = `./uploads/sale-order/${req.file.filename}`
+        newdata.proof_tf_image_url = filePath
+    }
+
     return SaleOrder.findByIdAndUpdate(id, newdata, { runValidators: true })
         .then(result => {
             if (result) {

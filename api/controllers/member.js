@@ -190,6 +190,12 @@ const unlink = async (req, res) => {
         })
 }
 
+const excelDateToJSDate =( excelDate) => {
+    var date = new Date(Math.round((excelDate - (25567 + 1)) * 86400 * 1000));
+    var converted_date = date.toISOString().split('T')[0];
+    return converted_date;
+}
+
 const importExcel = async (req, res) => {
     let userIds = []
     try {
@@ -205,8 +211,8 @@ const importExcel = async (req, res) => {
                     employee_no: val["Nomor Pegawai"],
                     email: val["Email"],
                     phone: val["Nomor Telepon"],
-                    join_date: val["Tanggal Bergabung"],
-                    end_date: val["Tanggal Selesai Kontrak"],
+                    join_date: excelDateToJSDate(val["Tanggal Bergabung"]),
+                    end_date: excelDateToJSDate(val["Tanggal Selesai Kontrak"]),
                     branch: val["Cabang"],
                     salary: val["Gaji Pokok"],
                     deposit_amount: val["Setoran Simpanan"],
@@ -228,6 +234,7 @@ const importExcel = async (req, res) => {
                 )
                 if( branch )
                     datas[i].branch_id = branch.id;
+                // else throw new Error("No branch");
             }
 
             if(fs.existsSync(filePath)) fs.unlinkSync(filePath)
@@ -239,7 +246,7 @@ const importExcel = async (req, res) => {
                 .catch(error => {
                     return User.deleteMany(
                         {"_id" : { $in : userIds}},
-                    ).then(res => {
+                    ).then(result => {
                         res.status(422);
                         res.json({
                             errors: [error.message]
