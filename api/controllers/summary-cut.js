@@ -9,6 +9,7 @@ const Deposit = require('../models/deposit');
 const LoanContract = require('../models/loan-contract');
 const Installment = require('../models/installment');
 const SaleOrder = require('../models/sale-order');
+const Point = require('../models/point');
 
 
 const exportExcel = async (req, res) => {
@@ -224,6 +225,29 @@ const importExcel = async (req, res) => {
             }
 
             //sale
+            let sale_orders = await SaleOrder.find(
+                    {
+                        $and : [
+                            {"user_id" : { $in : userIds}},
+                            {status: 'process'},
+                            {payment_method: 'salary_cut'},
+                        ]
+                    }
+                )
+            for(let i=sale_orders.length-1; i>=0; i-- ){
+            
+                let point = await Point.findOne({user_id: sale_orders[i].user_id});
+                if(point){
+                    point.amount = point.amount + sale_orders[i].total_amount
+                    await point.save()
+                }else{
+                    await Point.create({
+                        user_id: sale_orders[i].user_id,
+                        amount : sale_orders[i].total_amount,
+                    })
+                }
+            }
+
             await SaleOrder.updateMany(
                     {
                         $and : [

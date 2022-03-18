@@ -9,11 +9,11 @@ router.use([
 
 router.route('/')
     .get(saleOrderController.index)
-    .post(saleOrderController.create);
+    // .post(saleOrderController.create);
 
 router.route('/:saleOrderId')
     .get(saleOrderController.show)
     .patch(saleOrderController.update)
-    .delete(saleOrderController.unlink);
+    // .delete(saleOrderController.unlink);
 
 module.exports = router;

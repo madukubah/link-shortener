@@ -20,6 +20,7 @@ const productCategoryRouter = require('./api/routes/product-category');
 const dashboardRouter = require('./api/routes/dashboard');
 const summaryCutRouter = require('./api/routes/summary-cut');
 const saleOrderCutRouter = require('./api/routes/sale-order');
+const pointRouter = require('./api/routes/point');
 
 const mobileAuthRouter = require('./api/routes/mobile/auth');
 const mobileDepositRouter = require('./api/routes/mobile/deposit');
@@ -28,8 +29,9 @@ const mobileLoanContractRouter = require('./api/routes/mobile/loan-contract');
 const mobileInstallmentRouter = require('./api/routes/mobile/installment');
 const mobileProductCategoryRouter = require('./api/routes/mobile/product-category');
 const mobileProductRouter = require('./api/routes/mobile/product');
-const saleOrderRouter = require('./api/routes/mobile/sale-order');
-const saleOrderLineRouter = require('./api/routes/mobile/sale-orderline');
+const mobileSaleOrderRouter = require('./api/routes/mobile/sale-order');
+const mobileSaleOrderLineRouter = require('./api/routes/mobile/sale-orderline');
+const mobilePointRouter = require('./api/routes/mobile/point');
 
 
 app.use(helmet())
@@ -68,6 +70,7 @@ app.use('/product-category', productCategoryRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/summary-cut', summaryCutRouter);
 app.use('/sale', saleOrderCutRouter);
+app.use('/point', pointRouter);
 
 app.use('/mobile/auth', mobileAuthRouter);
 app.use('/mobile/deposit', mobileDepositRouter);
@@ -76,8 +79,9 @@ app.use('/mobile/loan-contract', mobileLoanContractRouter);
 app.use('/mobile/installment', mobileInstallmentRouter);
 app.use('/mobile/product-category', mobileProductCategoryRouter);
 app.use('/mobile/product', mobileProductRouter);
-app.use('/mobile/sale', saleOrderRouter);
-app.use('/mobile/sale-orderline', saleOrderLineRouter);
+app.use('/mobile/sale', mobileSaleOrderRouter);
+app.use('/mobile/sale-orderline', mobileSaleOrderLineRouter);
+app.use('/mobile/point', mobilePointRouter);
 
 // handle error
 app.use((request, response, next) => {

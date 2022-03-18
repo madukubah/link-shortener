@@ -38,34 +38,34 @@ const index = async (req, res) => {
 
     let saleOrderAggregate = SaleOrder.aggregate([
         { $match: { user_id: mongoose.Types.ObjectId(userId) }},
-        // {
-        //     $lookup:
-        //     {
-        //         from: "sale-orderlines",
-        //         let: { "sale_id": "$_id" },
-        //         as: "orderlines",
-        //         pipeline :[
-        //             {
-        //                 $match: { 
-        //                     $expr: { $eq: ["$$sale_id", "$sale_id"] }
-        //                 }
-        //             },
-        //             {
+        {
+            $lookup:
+            {
+                from: "sale-orderlines",
+                let: { "sale_id": "$_id" },
+                as: "orderlines",
+                pipeline :[
+                    {
+                        $match: { 
+                            $expr: { $eq: ["$$sale_id", "$sale_id"] }
+                        }
+                    },
+                    {
                         
-        //                 $lookup:
-        //                 {
-        //                     from: "products",
-        //                     localField: "product_id",
-        //                     foreignField: "_id",
-        //                     as: "product",
+                        $lookup:
+                        {
+                            from: "products",
+                            localField: "product_id",
+                            foreignField: "_id",
+                            as: "product",
 
-        //                 }       
-        //             },
-        //             { $unwind: "$product" },
-        //         ],
+                        }       
+                    },
+                    { $unwind: "$product" },
+                ],
 
-        //     }
-        // },
+            }
+        },
     ]);
     let saleOrders = await SaleOrder.aggregatePaginate(saleOrderAggregate, { page: page, limit: limit })
     res.status(200);
@@ -87,34 +87,21 @@ const show = async (req, res) => {
                             $expr: { $eq: ["$$sale_id", "$sale_id"] }
                         }
                     },
-                    // {
+                    {
                         
-                    //     $lookup:
-                    //     {
-                    //         from: "products",
-                    //         localField: "product_id",
-                    //         foreignField: "_id",
-                    //         as: "product",
+                        $lookup:
+                        {
+                            from: "products",
+                            localField: "product_id",
+                            foreignField: "_id",
+                            as: "product",
 
-                    //     }       
-                    // },
-                    // { $unwind: "$product" },
+                        }       
+                    },
+                    { $unwind: "$product" },
                 ],
                 as: "orderlines",
-
             }
-        },
-        { $unwind: "$orderlines" },
-        {
-            
-            $lookup:
-            {
-                from: "products",
-                localField: "orderlines.product_id",
-                foreignField: "_id",
-                as: "product",
-
-            }       
         },
     ]);
 

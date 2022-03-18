@@ -191,60 +191,79 @@ const unlink = async (req, res) => {
 }
 
 const importExcel = async (req, res) => {
-    if(req.file && req.file.filename) {
-        const filePath = `./uploads/excels/${req.file.filename}`
-        const wbRead = xlxs.readFile(filePath)
-        const sheetNameLists = wbRead.SheetNames
-        const fetchData = xlxs.utils.sheet_to_json(wbRead.Sheets[sheetNameLists[0]])
-        let datas = fetchData.map( (val) => {
-            return {
-                name: val["Nama"],
-                id_number: val["KTP"],
-                employee_no: val["Nomor Pegawai"],
-                email: val["Email"],
-                phone: val["Nomor Telepon"],
-                join_date: val["Tanggal Bergabung"],
-                end_date: val["Tanggal Selesai Kontrak"],
-                branch: val["Cabang"],
-                salary: val["Gaji Pokok"],
-                deposit_amount: val["Setoran Simpanan"],
-            }
-        });
-        for(let i=0; i< datas.length; i++ ){
-            let email = datas[i].email;
-            let user = await User.create({
-                username: email,
-                password: email.substr(0, email.indexOf("@")),
-                pin: "123456"
-            })
-            datas[i].user_id = user._id;
-            let branch = await BranchOffice.findOne(
-                {
-                    name: new RegExp(`${datas[i].branch}`, 'i')
+    let userIds = []
+    try {
+        if(req.file && req.file.filename) {
+            const filePath = `./uploads/excels/${req.file.filename}`
+            const wbRead = xlxs.readFile(filePath)
+            const sheetNameLists = wbRead.SheetNames
+            const fetchData = xlxs.utils.sheet_to_json(wbRead.Sheets[sheetNameLists[0]])
+            let datas = fetchData.map( (val) => {
+                return {
+                    name: val["Nama"],
+                    id_number: val["KTP"],
+                    employee_no: val["Nomor Pegawai"],
+                    email: val["Email"],
+                    phone: val["Nomor Telepon"],
+                    join_date: val["Tanggal Bergabung"],
+                    end_date: val["Tanggal Selesai Kontrak"],
+                    branch: val["Cabang"],
+                    salary: val["Gaji Pokok"],
+                    deposit_amount: val["Setoran Simpanan"],
                 }
-            )
-            if( branch )
-                datas[i].branch_id = branch.id;
-        }
+            });
+            for(let i=0; i< datas.length; i++ ){
+                let email = datas[i].email;
+                let user = await User.create({
+                    username: email,
+                    password: email.substr(0, email.indexOf("@")),
+                    pin: "123456"
+                })
+                userIds.push(user._id)
+                datas[i].user_id = user._id;
+                let branch = await BranchOffice.findOne(
+                    {
+                        name: new RegExp(`${datas[i].branch}`, 'i')
+                    }
+                )
+                if( branch )
+                    datas[i].branch_id = branch.id;
+            }
 
-        if(fs.existsSync(filePath)) fs.unlinkSync(filePath)
-        return Member.insertMany(datas)
-            .then(members => {
-                res.status(201);
-                res.json(members)
-            })
-            .catch(error => {
-                res.status(422);
-                res.json({
-                    errors: [error.message]
-                });
-            })
+            if(fs.existsSync(filePath)) fs.unlinkSync(filePath)
+            return Member.insertMany(datas)
+                .then(members => {
+                    res.status(201);
+                    res.json(members)
+                })
+                .catch(error => {
+                    return User.deleteMany(
+                        {"_id" : { $in : userIds}},
+                    ).then(res => {
+                        res.status(422);
+                        res.json({
+                            errors: [error.message]
+                        });
+                    })
+                })
+        }else{
+            res.status(422);
+            res.json({
+                errors: ["No Filename"]
+            });
+            return 
+        }
+    } catch (error) {
+        await User.deleteMany(
+            {"_id" : { $in : userIds}},
+        );
+
+        res.status(500);
+        res.json({
+            errors: [error.message]
+        });
+        return 
     }
-    res.status(500);
-    res.json({
-        errors: ["No Filename"]
-    });
-    return 
 }
 const exportExcelTemplate = async (req, res) => {
     // You can define styles as json object

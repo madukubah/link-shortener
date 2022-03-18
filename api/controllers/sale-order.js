@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const sanitize = require('mongo-sanitize');
 const SaleOrder = require('../models/sale-order');
+const Point = require('../models/point');
 const SaleOrderLine = require('../models/sale-orderline');
 
 const create = async (req, res) => {
@@ -35,8 +36,16 @@ const index = async (req, res) => {
     const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
     const search = req.query.search
+    const status = req.query.status
 
     let query = {}
+    if(status) {
+        query["$or"] = [
+            {
+                status: status
+            },
+        ];
+    }
     if(search) {
         query["$or"] = [
             {
@@ -119,9 +128,25 @@ const show = async (req, res) => {
     return
 }
 
-const update = (req, res) => {
+const update = async (req, res) => {
     let id = req.params.saleOrderId;
     let newdata = req.body;
+
+    let saleOrder = await SaleOrder.findById(id)
+
+    if( newdata.status && newdata.status == 'done'  ){
+        let point = await Point.findOne({user_id: saleOrder.user_id});
+        if(point){
+            point.amount = point.amount + saleOrder.total_amount
+            await point.save()
+        }else{
+            await Point.create({
+                user_id: saleOrder.user_id,
+                amount : saleOrder.total_amount,
+            })
+        }
+    }
+
     return SaleOrder.findByIdAndUpdate(id, newdata, { runValidators: true })
         .then(result => {
             if (result) {

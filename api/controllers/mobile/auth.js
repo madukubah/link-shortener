@@ -17,7 +17,7 @@ const signIn = async (req, res) => {
             })
             return
         }
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ username: username, role: 'user' });
 
         if (user && (await bcrypt.compare(password, user.password))) {
             const member = await Member.findOne({ user_id: user.id});

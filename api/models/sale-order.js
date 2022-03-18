@@ -33,7 +33,7 @@ const SaleOrderSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ['draft', 'process', 'done'],
+            enum: ['draft', 'process', 'done', 'cancel'],
             default: 'draft',
             required: [true, 'status cannot be empty']
         },

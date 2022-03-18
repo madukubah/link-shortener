@@ -31,8 +31,8 @@ router.route('/')
     .get([jwtAuth],memberController.index)
     .post([jwtAuth],memberController.create);
 
-router.route('/exportExcel')
-    .get([jwtAuth],memberController.exportExcel)
+// router.route('/exportExcel')
+//     .get([jwtAuth],memberController.exportExcel)
 
 router.route('/exportExcelTemplate')
     .get(memberController.exportExcelTemplate)

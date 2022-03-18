@@ -51,7 +51,7 @@ const signIn = async (req, res) => {
             })
             return
         }
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ username: username, role: 'admin' });
 
         if (user && (await bcrypt.compare(password, user.password))) {
             const token = jwt.sign(
