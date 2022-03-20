@@ -40,7 +40,7 @@ const create = async (req, res) => {
             .catch(error => {
                 res.status(422);
                 res.json({
-                    message: error.messages
+                    message: error.message
                 });
             })
     } catch (err) {

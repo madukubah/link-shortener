@@ -93,7 +93,7 @@ app.use((request, response, next) => {
 app.use((error, request, response, next) => {
     return response.status(error.status || 500).json({
         status: false,
-        errors: [error.message] || ['SERVER ERROR']
+        error: error.message || 'SERVER ERROR'
     })
 })
 
