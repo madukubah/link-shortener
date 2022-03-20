@@ -79,9 +79,16 @@ const getByUserId = (req, res) => {
     const userId = req.user.id;
     const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
+    const status = req.query.status
 
+    let query = {
+        user_id: mongoose.Types.ObjectId(userId)
+    }
+    if(status) {
+        query['status'] = status
+    }
     let loanContractAggregate = LoanContract.aggregate([
-        { $match: { user_id: mongoose.Types.ObjectId(userId) }},
+        { $match: query },
         {
             $lookup:
             {
