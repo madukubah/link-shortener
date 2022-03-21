@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const Installment = require('../../models/installment');
 
-const getByContractId = (req, res) => {
+const getByContractId = async (req, res) => {
     const contractId = req.params.contractId;
     const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
