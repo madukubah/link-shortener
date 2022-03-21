@@ -1,4 +1,5 @@
 const sanitize = require('mongo-sanitize');
+const mongoose = require('mongoose');
 
 const Installment = require('../../models/installment');
 
@@ -8,9 +9,24 @@ const getByContractId = (req, res) => {
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
 
     const query = { contract_id: contractId }
+    let sum = await Installment.aggregate(
+        [
+            { $match: { contract_id: mongoose.Types.ObjectId(contractId) }},
+            {
+                $group: {
+                    _id: "$contract_id",
+                    total: {
+                        $sum: "$amount"
+                    }
+                }
+            }
+        ],
+    );
+
     return Installment.paginate(query, { page: page, limit: limit })
         .then(installments => {
             if (installments) {
+                installments.sum = sum.length > 0  ? sum[0].total: 0;
                 res.status(200);
                 res.json(installments);
             }

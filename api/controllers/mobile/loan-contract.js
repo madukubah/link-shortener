@@ -73,7 +73,6 @@ const show = async (req, res) => {
             }
         ],
     );
-    console.log(sum)
 
     return LoanContract.findById(contractId)
         .then(loanContract => {
