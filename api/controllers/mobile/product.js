@@ -10,21 +10,18 @@ const index = async (req, res) => {
     const is_highlight = req.query.is_highlight
 
     let query = {}
-    if(search) {
+    if(search || is_highlight) {
         query["$or"] = [
             {
                 name: new RegExp(`${search}`, 'i')
-            }
-        ];
-    }
-    
-    if(is_highlight) {
-        query["$or"] = [
+            },
             {
                 is_highlight: is_highlight
             }
         ];
     }
+
+    
     let productAggregate = Product.aggregate([
         {$match: query} ,
         {
