@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const LoanContract = require('../../models/loan-contract');
 const SummaryCut = require('../../models/summary-cut');
+const User = require('../../models/user');
 
 const create = async (req, res) => {
     try {
