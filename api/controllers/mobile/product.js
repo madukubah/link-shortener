@@ -20,7 +20,7 @@ const index = async (req, res) => {
                 is_highlight:  (is_highlight === 'true')
             },
             {
-                product_category_id:  product_category_id
+                product_category_id:  mongoose.Types.ObjectId(product_category_id)
             }
         ];
     }

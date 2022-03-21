@@ -7,7 +7,7 @@ const create = async (req, res) => {
     try {
         const filePath = `/uploads/products/${req.files.file[0].filename}`;
         req.body.image_url = filePath
-        if( req.body.is_highlight ){
+        if( req.body.is_highlight && req.files.banner ){
             const bannerFilePath = `/uploads/products/${req.files.banner[0].filename}`;
             req.body.banner_url = bannerFilePath
         }
