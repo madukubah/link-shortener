@@ -1,6 +1,8 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
-const sender = require('../helpers/sender-rabbitmq')
+// const sender = require('../helpers/sender-rabbitmq')
+const mailer = require('../helpers/sender-email')
+const emailTemplate = require('../others/email-templates')
 
 const update = (req, res) => {
     let id = req.params.userId;
@@ -35,12 +37,26 @@ sendResetPassword = async (request, response, next) => {
             findEmail.token = bcrypt.hashSync( `${Date.now()}` , bcrypt.genSaltSync());
             findEmail.save();
             if(request.body.link) {
+                // data = {
+                //     email: findEmail.email,
+                //     token: findEmail.token,
+                //     link: request.body.link
+                // }
+
                 data = {
-                    email: findEmail.email,
-                    token: findEmail.token,
-                    link: request.body.link
+                    service: 'gmail',
+                    host: 'smtp.gmail.com',
+                    port: 587,
+                    sender: 'dev01@bestada.co.id',
+                    password: 'SaYang86',
+                    from: 'Sharia Coop (do not replay)',
+                    receiver: findEmail.username,
+                    subject: 'Reset password',
+                    text: 'resetPassword',
+                    html: emailTemplate.reset(`${request.body.link}/${findEmail.token}`)
                 }
-                await sender.send(data, 'resetPassword')
+                // await sender.send(data, 'resetPassword')
+                await mailer.send(data)
                 return response.status(200).json({
                     status: true,
                     message: 'The link for resetting the password has been sent to the email'
