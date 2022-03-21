@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const LoanContract = require('../../models/loan-contract');
 const SummaryCut = require('../../models/summary-cut');
 const User = require('../../models/user');
+const Installment = require('../../models/installment');
 
 const create = async (req, res) => {
     try {
@@ -56,11 +57,27 @@ const create = async (req, res) => {
     }
 }
 
-const show = (req, res) => {
+const show = async (req, res) => {
     const contractId = req.params.contractId;
+
+    let sum = await Installment.aggregate(
+        [
+            { $match: { contract_id: mongoose.Types.ObjectId(contractId) }},
+            {
+                $group: {
+                    _id: "$contract_id",
+                    total: {
+                        $sum: "$amount"
+                    }
+                }
+            }
+        ],
+    );
+
     return LoanContract.findById(contractId)
         .then(loanContract => {
             if (loanContract) {
+                loanContract.installment.sum = sum.length>0  ? sum[0].total: 0;
                 res.status(200);
                 res.json(loanContract);
             }
