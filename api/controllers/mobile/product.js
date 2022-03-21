@@ -8,6 +8,7 @@ const index = async (req, res) => {
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
     const search = req.query.search
     const is_highlight = req.query.is_highlight
+    const product_category_id = req.query.product_category_id
 
     let query = {}
     if(search || is_highlight) {
@@ -17,6 +18,9 @@ const index = async (req, res) => {
             },
             {
                 is_highlight:  (is_highlight === 'true')
+            },
+            {
+                product_category_id:  product_category_id
             }
         ];
     }
