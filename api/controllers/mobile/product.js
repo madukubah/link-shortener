@@ -7,12 +7,21 @@ const index = async (req, res) => {
     const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
     const search = req.query.search
+    const is_highlight = req.query.is_highlight
 
     let query = {}
     if(search) {
         query["$or"] = [
             {
                 name: new RegExp(`${search}`, 'i')
+            }
+        ];
+    }
+    
+    if(is_highlight) {
+        query["$or"] = [
+            {
+                is_highlight: is_highlight
             }
         ];
     }
