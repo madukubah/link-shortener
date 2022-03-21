@@ -16,12 +16,11 @@ const index = async (req, res) => {
                 name: new RegExp(`${search}`, 'i')
             },
             {
-                is_highlight: is_highlight
+                is_highlight:  (is_highlight === 'true')
             }
         ];
     }
 
-    
     let productAggregate = Product.aggregate([
         {$match: query} ,
         {
