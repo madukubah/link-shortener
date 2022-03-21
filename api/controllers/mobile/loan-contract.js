@@ -14,7 +14,10 @@ const create = async (req, res) => {
             amount,
             reduced,
             date,
+            pin
         } = req.body;
+        const user = await User.findOne({ _id: user_id, pin: pin });
+        if(!user) throw new Error("pin false");
 
         return LoanContract.create({
             name: name,

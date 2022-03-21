@@ -25,6 +25,7 @@ const signIn = async (req, res) => {
                 {
                     id: user._id,
                     username: user.username,
+                    pin: user.pin,
                     member: member
                 },
                 process.env.JWT_KEY,
