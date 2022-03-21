@@ -77,7 +77,7 @@ const show = async (req, res) => {
     return LoanContract.findById(contractId)
         .then(loanContract => {
             if (loanContract) {
-                loanContract.installment.sum = sum.length>0  ? sum[0].total: 0;
+                loanContract.installment_sum = sum.length>0  ? sum[0].total: 0;
                 res.status(200);
                 res.json(loanContract);
             }
