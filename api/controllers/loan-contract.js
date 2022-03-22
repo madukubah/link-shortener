@@ -149,10 +149,37 @@ const getByUserId = (req, res) => {
         })
 }
 
+const lineChart = async (req, res) => {
+    const startDate = sanitize(req.query.startDate)
+    const endDate = sanitize(req.query.endDate)
+    let query = {}
+    if( startDate && endDate){
+        query = { 
+            date: {$gte:new Date(startDate),$lte:new Date(endDate)}
+        }
+    }
+    let loanContractAggregate = await LoanContract.aggregate([
+        {$match: query} ,
+        {
+            $group: {
+                _id: "$date",
+                amount: {
+                    $sum: "$amount"
+                }
+            }
+        }
+        
+    ]);
+
+    res.status(200);
+    res.json(loanContractAggregate)
+}
+
 module.exports = {
     index,
     getByUserId,
     create,
     update,
-    show
+    show,
+    lineChart
 }

@@ -11,7 +11,7 @@ const index = async (req, res) => {
     const product_category_id = req.query.product_category_id
 
     let query = {}
-    if(search || is_highlight) {
+    if(search || is_highlight || product_category_id) {
         query["$or"] = [
             {
                 name: new RegExp(`${search}`, 'i')

@@ -7,6 +7,7 @@ router.use([
     jwtAuth,
 ]);
 
+
 router.route('/user/:userId')
     .get(loanContractController.getByUserId)
 
