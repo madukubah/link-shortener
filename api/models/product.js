@@ -9,6 +9,11 @@ const ProductSchema = new mongoose.Schema(
             trim: true,
             required: [true, 'name cannot be empty']
         },
+        desc: {
+            type: String,
+            trim: true,
+            default: " "
+        },
         price: {
             type: Number,
             trim: true,
