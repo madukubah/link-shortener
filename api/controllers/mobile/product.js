@@ -11,18 +11,27 @@ const index = async (req, res) => {
     const product_category_id = req.query.product_category_id
 
     let query = {}
-    if(search || is_highlight || product_category_id) {
-        query["$or"] = [
-            {
-                name: new RegExp(`${search}`, 'i')
-            },
-            {
-                is_highlight:  (is_highlight === 'true')
-            },
-            {
-                product_category_id:  mongoose.Types.ObjectId(product_category_id)
-            }
-        ];
+    // if(search || is_highlight || product_category_id) {
+    //     query["$and"] = [
+    //         {
+    //             name: new RegExp(`${search}`, 'i')
+    //         },
+    //         {
+    //             is_highlight:  (is_highlight === 'true')
+    //         },
+    //         {
+    //             product_category_id:  mongoose.Types.ObjectId(product_category_id)
+    //         }
+    //     ];
+    // }
+    if(search) {
+        query.name = new RegExp(`${search}`, 'i')
+    }
+    if(is_highlight) {
+        query.is_highlight =  (is_highlight === 'true')
+    }
+    if(product_category_id) {
+        query.product_category_id = mongoose.Types.ObjectId(product_category_id)
     }
 
     let productAggregate = Product.aggregate([
