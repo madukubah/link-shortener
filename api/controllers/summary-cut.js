@@ -234,6 +234,7 @@ const importExcel = async (req, res) => {
                         ]
                     }
                 )
+                
             for(let i=sale_orders.length-1; i>=0; i-- ){
             
                 let point = await Point.findOne({user_id: sale_orders[i].user_id});
