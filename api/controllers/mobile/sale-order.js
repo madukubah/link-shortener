@@ -58,6 +58,7 @@ const index = async (req, res) => {
     const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
     const status = sanitize(req.query.status)
+    const search = sanitize(req.query.search)
     const userId = req.user.id;
 
     let query = {
@@ -65,6 +66,13 @@ const index = async (req, res) => {
     }
     if(status){
         query.status = status
+    }
+    if(search){
+        query["$or"] = [
+            {
+                name: new RegExp(`${search}`, 'i')
+            }
+        ];
     }
     let saleOrderAggregate = SaleOrder.aggregate([
         { $match: query },
