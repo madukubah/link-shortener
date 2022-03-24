@@ -57,10 +57,17 @@ const create = async (req, res) => {
 const index = async (req, res) => {
     const page = sanitize(req.query.page) ? sanitize(req.query.page) : 1
     const limit = sanitize(req.query.limit) ? sanitize(req.query.limit) : 10
+    const status = sanitize(req.query.status)
     const userId = req.user.id;
 
+    let query = {
+        user_id: mongoose.Types.ObjectId(userId)
+    }
+    if(status){
+        query.status = status
+    }
     let saleOrderAggregate = SaleOrder.aggregate([
-        { $match: { user_id: mongoose.Types.ObjectId(userId) }},
+        { $match: query },
         {
             $lookup:
             {
