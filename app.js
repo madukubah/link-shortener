@@ -34,6 +34,7 @@ const mobileSaleOrderLineRouter = require('./api/routes/mobile/sale-orderline');
 const mobilePointRouter = require('./api/routes/mobile/point');
 const mobileInfoRouter = require('./api/routes/mobile/info');
 const mobileBankRouter = require('./api/routes/mobile/bank');
+const mobileMemberRouter = require('./api/routes/mobile/member');
 
 
 app.use(helmet())
@@ -86,7 +87,8 @@ app.use('/mobile/sale-orderline', mobileSaleOrderLineRouter);
 app.use('/mobile/point', mobilePointRouter);
 app.use('/mobile/info', mobileInfoRouter);
 app.use('/mobile/bank', mobileBankRouter);
-mobileBankRouter
+app.use('/mobile/member', mobileMemberRouter);
+
 // handle error
 app.use((request, response, next) => {
     const error = new Error('Not found')
