@@ -137,6 +137,9 @@ const update = async (req, res) => {
         let saleOrder = await SaleOrder.findById(id)
 
         if( newdata.status !== undefined ){
+            if(newdata.status == 'done' && (saleOrder.payment_method == 'credit' && saleOrder.payment_method == 'salary_cut') ){
+                throw new Error("payment method by credit or salary cut cannot be done manually")
+            }
             if(newdata.status == 'done' && saleOrder.payment_method == 'transfer' ){
                 let point = await Point.findOne({user_id: saleOrder.user_id});
                 if(point){
@@ -155,9 +158,6 @@ const update = async (req, res) => {
                     saleCredit.status = "success"
                     await saleCredit.save()
                 }
-            }
-            if(newdata.status == 'done' && (saleOrder.payment_method == 'credit' && saleOrder.payment_method == 'salary_cut') ){
-                throw new Error("payment method by credit or salary cut cannot be done manually")
             }
         }
 

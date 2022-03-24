@@ -293,11 +293,10 @@ const importExcel = async (req, res) => {
                     $and : [
                         {"user_id" : { $in : userIds}},
                         {status: 'success'},
-                        {payment_method: 'credit'},
                     ]
                 }
             )
-
+            
             for(let i=saleCredits.length-1; i>=0; i-- ){
     
                 await Installment.create({
@@ -317,6 +316,7 @@ const importExcel = async (req, res) => {
                         }
                     }
                 ])
+
                 if(installmentAmount){
                     let creaditAmount = saleCredits[i].amount - saleCredits[i].reduced
                     if( (creaditAmount - 1) <= installmentAmount[0].total )

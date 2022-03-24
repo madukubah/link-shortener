@@ -13,6 +13,9 @@ const SaleOrderSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             required: [true, 'user cannot be empty']
         },
+        bank_id: {
+            type: mongoose.Schema.Types.ObjectId,
+        },
         date: {
             type: Date,
             required: [true, 'join date cannot be empty']
