@@ -10,6 +10,7 @@ const LoanContract = require('../models/loan-contract');
 const Installment = require('../models/installment');
 const SaleOrder = require('../models/sale-order');
 const Point = require('../models/point');
+const SaleCredit = require('../models/sale-credit');
 
 
 const exportExcel = async (req, res) => {
@@ -53,6 +54,24 @@ const exportExcel = async (req, res) => {
                 }
             },
             {
+                $lookup:
+                {
+                    from: "sale-credits",
+                    let: { "user_id": "$user_id" },
+                    as: "sale_credits",
+                    pipeline :[
+                        {
+                            $match: { 
+                                $and:[
+                                    {$expr: { $eq: ["$$user_id", "$user_id"] }},
+                                    {status: 'success'},
+                                ]
+                            }
+                        },
+                    ],
+                }
+            },
+            {
                 $project: {
                     "_id": 1,
                     "user_id": 1,
@@ -70,6 +89,12 @@ const exportExcel = async (req, res) => {
                     "sale_orders": {
                         "total_amount": 1,
                         "payment_method": 1,
+                    },
+                    "sale_credits": {
+                        "period": 1,
+                        "amount": 1,
+                        "reduced": 1,
+                        "instalment_per_period": 1,
                     },
                 }
             }
@@ -139,6 +164,7 @@ const exportExcel = async (req, res) => {
     members.map(member => {
         member.loan_installment_amount = member.loan_contracts.reduce((prev, curr)=> prev + curr.instalment_per_period, 0)
         member.time_deposit = member.sale_orders.reduce((prev, curr)=> prev + curr.total_amount, 0)
+        member.credit_amount = member.sale_credits.reduce((prev, curr)=> prev + curr.instalment_per_period, 0)
         return member
     })
     const report = excel.buildExport(
@@ -234,7 +260,7 @@ const importExcel = async (req, res) => {
                         ]
                     }
                 )
-                
+
             for(let i=sale_orders.length-1; i>=0; i-- ){
             
                 let point = await Point.findOne({user_id: sale_orders[i].user_id});
@@ -260,6 +286,57 @@ const importExcel = async (req, res) => {
                     { status: 'done' }, 
                     { runValidators: true }
                 )
+            
+            // sale credit
+            let saleCredits = await SaleCredit.find(
+                {
+                    $and : [
+                        {"user_id" : { $in : userIds}},
+                        {status: 'success'},
+                        {payment_method: 'credit'},
+                    ]
+                }
+            )
+
+            for(let i=saleCredits.length-1; i>=0; i-- ){
+    
+                await Installment.create({
+                    contract_id : saleCredits[i]._id,
+                    amount : saleCredits[i].instalment_per_period,
+                    date : Date.now(),
+                })
+    
+                let installmentAmount = await Installment.aggregate([
+                    {$match : { contract_id : mongoose.Types.ObjectId(saleCredits[i]._id) }},
+                    {
+                        $group : {
+                            _id : null,
+                            total : {
+                                $sum : "$amount"
+                            }
+                        }
+                    }
+                ])
+                if(installmentAmount){
+                    let creaditAmount = saleCredits[i].amount - saleCredits[i].reduced
+                    if( (creaditAmount - 1) <= installmentAmount[0].total )
+                    {
+                        saleCredits[i].status = 'done'
+                        await saleCredits[i].save()
+                        await SaleOrder.updateMany(
+                            {
+                                $and : [
+                                    {"_id" : { $in : [saleCredits[i].sale_id ]}},
+                                    {status: 'process'},
+                                    {payment_method: 'credit'},
+                                ]
+                            }, 
+                            { status: 'done' }, 
+                            { runValidators: true }
+                        )
+                    }
+                }
+            }
             res.status(201);
             res.json({
                 message: "success"

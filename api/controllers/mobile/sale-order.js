@@ -22,6 +22,10 @@ const create = async (req, res) => {
                 saleOrder.remove()
                 throw new Error("period is required for sale credit")
             }
+            if( saleData.period == 0 ){
+                saleOrder.remove()
+                throw new Error("period is required for sale credit")
+            }
 
             let creditData = {
                 sale_id : saleOrder._id,

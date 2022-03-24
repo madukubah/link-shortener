@@ -3,6 +3,7 @@ const sanitize = require('mongo-sanitize');
 const SaleOrder = require('../models/sale-order');
 const Point = require('../models/point');
 const SaleOrderLine = require('../models/sale-orderline');
+const SaleCredit = require('../models/sale-credit');
 
 const create = async (req, res) => {
     try {
@@ -147,6 +148,16 @@ const update = async (req, res) => {
                         amount : saleOrder.total_amount,
                     })
                 }
+            }
+            if(newdata.status == 'process' && saleOrder.payment_method == 'credit' ){
+                let saleCredit = await SaleCredit.findOne({user_id: saleOrder.user_id});
+                if(saleCredit){
+                    saleCredit.status = "success"
+                    await saleCredit.save()
+                }
+            }
+            if(newdata.status == 'done' && (saleOrder.payment_method == 'credit' && saleOrder.payment_method == 'salary_cut') ){
+                throw new Error("payment method by credit or salary cut cannot be done manually")
             }
         }
 
