@@ -5,7 +5,7 @@ const update = (req, res) => {
     let id = req.params.memberId;
     let newdata = req.body;
     if(req.file && req.file.filename) {
-        const filePath = `./uploads/users/${req.file.filename}`
+        const filePath = `/uploads/users/${req.file.filename}`
         newdata.image_url = filePath
     }
     return Member.findByIdAndUpdate(id, newdata, { runValidators: true })
