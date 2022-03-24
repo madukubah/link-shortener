@@ -17,19 +17,20 @@ const SaleOrderSchema = new mongoose.Schema(
             type: Date,
             required: [true, 'join date cannot be empty']
         },
-        sale_type: {
-            type: String,
-            enum: ['credit', 'tempo'],
-            // required: [true, 'sale_type cannot be empty']
-        },
+        // sale_type: {
+        //     type: String,
+        //     enum: ['credit', 'tempo'],
+        //     // required: [true, 'sale_type cannot be empty']
+        // },
         payment_method: {
             type: String,
-            enum: ['cash', 'transfer', 'salary_cut'],
+            enum: ['cash', 'transfer', 'salary_cut', 'credit'],
             required: [true, 'payment_method cannot be empty']
         },
         total_amount: {
             type: Number,
             trim: true,
+            required: [true, 'total_amount cannot be empty']
         },
         proof_tf_image_url: {
             type: String,

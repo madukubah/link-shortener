@@ -6,7 +6,7 @@ const SaleOrderLineSchema = new mongoose.Schema(
     {
         sale_id: {
             type: mongoose.Schema.Types.ObjectId,
-            required: [true, 'product cannot be empty']
+            required: [true, 'sale cannot be empty']
         },
         product_id: {
             type: mongoose.Schema.Types.ObjectId,

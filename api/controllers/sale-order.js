@@ -129,45 +129,55 @@ const show = async (req, res) => {
 }
 
 const update = async (req, res) => {
-    let id = req.params.saleOrderId;
-    let newdata = req.body;
+    try{
+        let id = req.params.saleOrderId;
+        let newdata = req.body;
 
-    let saleOrder = await SaleOrder.findById(id)
+        let saleOrder = await SaleOrder.findById(id)
 
-    if( newdata.status && newdata.status == 'done'  ){
-        let point = await Point.findOne({user_id: saleOrder.user_id});
-        if(point){
-            point.amount = point.amount + saleOrder.total_amount
-            await point.save()
-        }else{
-            await Point.create({
-                user_id: saleOrder.user_id,
-                amount : saleOrder.total_amount,
-            })
+        if( newdata.status !== undefined ){
+            if(newdata.status == 'done' && saleOrder.payment_method == 'transfer' ){
+                let point = await Point.findOne({user_id: saleOrder.user_id});
+                if(point){
+                    point.amount = point.amount + saleOrder.total_amount
+                    await point.save()
+                }else{
+                    await Point.create({
+                        user_id: saleOrder.user_id,
+                        amount : saleOrder.total_amount,
+                    })
+                }
+            }
         }
-    }
 
-    return SaleOrder.findByIdAndUpdate(id, newdata, { runValidators: true })
-        .then(result => {
-            if (result) {
-                return SaleOrder.findById(result._id).then(saleOrder => {
-                    res.status(200);
-                    res.json(saleOrder);
-                });
-            }
-            else {
-                res.status(404);
+        return SaleOrder.findByIdAndUpdate(id, newdata, { runValidators: true })
+            .then(result => {
+                if (result) {
+                    return SaleOrder.findById(result._id).then(saleOrder => {
+                        res.status(200);
+                        res.json(saleOrder);
+                    });
+                }
+                else {
+                    res.status(404);
+                    res.json({
+                        message: "Not Found"
+                    });
+                }
+            })
+            .catch(error => {
+                res.status(422);
                 res.json({
-                    message: "Not Found"
+                    message: error.message
                 });
-            }
-        })
-        .catch(error => {
-            res.status(422);
-            res.json({
-                message: error.message
-            });
-        })
+            })
+    }catch (err) {
+        res.status(500);
+        res.json({
+            message: err.message
+        });
+        return;
+    }
 }
 
 const unlink = (req, res) => {

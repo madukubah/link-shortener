@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const sanitize = require('mongo-sanitize');
 const SaleOrder = require('../../models/sale-order');
 const SaleOrderLine = require('../../models/sale-orderline');
+const SaleCredit = require('../../models/sale-credit');
 
 const create = async (req, res) => {
     try {
@@ -12,20 +13,38 @@ const create = async (req, res) => {
 
         saleData.name = Date.now()
         saleData.user_id = user_id
-        saleData.total_amount = orderlines.reduce( (previousValue, currentValue) => currentValue.amount + previousValue, 0 )
+        // saleData.total_amount = or derlines.reduce( (previousValue, currentValue) => currentValue.amount + previousValue, 0 )
+
         let saleOrder = await SaleOrder.create(saleData) ;
+
+        if( saleData.payment_method == 'credit' ){
+            if( saleData.period == undefined ){
+                saleOrder.remove()
+                throw new Error("period is required for sale credit")
+            }
+
+            let creditData = {
+                sale_id : saleOrder._id,
+                user_id : user_id,
+                period : saleData.period,
+                amount : saleOrder.total_amount,
+                instalment_per_period : saleData.total_amount / saleData.period,
+            }
+            let saleCredit = await SaleCredit.create(creditData) ;
+        }
         orderlines.map(val => {
             val.sale_id = saleOrder._id;
             return val;
         })
         let saleOrderLines = await SaleOrderLine.insertMany(orderlines)
+
         res.status(201);
         res.json(saleOrder)
         return
     } catch (err) {
         res.status(500);
         res.json({
-            message: error.message
+            message: err.message
         });
         return;
     }
