@@ -3,6 +3,8 @@ const Bank = require('../../models/bank');
 
 const create = async (req, res) => {
     try {
+        const filePath = `/uploads/banks/${req.file.filename}`;
+        req.body.image_url = filePath
         return Bank.create(req.body)
             .then(bank => {
                 res.status(201);
@@ -67,6 +69,10 @@ const show = (req, res) => {
 const update = (req, res) => {
     let id = req.params.bankId;
     let newdata = req.body;
+    if(req.file && req.file.filename) {
+        const filePath = `./uploads/banks/${req.file.filename}`
+        newdata.image_url = filePath
+    }
     return Bank.findByIdAndUpdate(id, newdata, { runValidators: true })
         .then(result => {
             if (result) {

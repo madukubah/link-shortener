@@ -13,6 +13,11 @@ const BankSchema = new mongoose.Schema(
             trim: true,
             default: '-',
         },
+        image_url: {
+            type: String,
+            trim: true,
+            required: [true, 'image cannot be empty']
+        },
         account_number: {
             type: String,
             trim: true,

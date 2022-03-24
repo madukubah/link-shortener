@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const bankController = require('../../controllers/mobile/bank');
+const memberController = require('../../controllers/mobile/member');
 const jwtAuth = require('../../middlewares/auth');
 
 const storage = multer.diskStorage({
     destination: function(request, response, callback) {
-        callback(null, './uploads/banks/')
+        callback(null, './uploads/users/')
     },
     filename: function(request, response, callback) {
         const mimetype = response.mimetype.split('/')
@@ -48,17 +48,9 @@ router.use([
     jwtAuth,
 ]);
 
-router.route('/')
-    .get(bankController.index)
-    .post([
-        upload.single('file')
-    ],bankController.create);
-
-router.route('/:bankId')
-    .get(bankController.show)
+router.route('/:memberId')
     .patch([
         upload.single('file')
-    ],bankController.update)
-    .delete(bankController.unlink);
+    ],memberController.update)
 
 module.exports = router;

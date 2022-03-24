@@ -3,4 +3,6 @@ node_modules/
 
 uploads/articles/*.png
 uploads/products/*.png
+uploads/banks/*.png
+uploads/users/*.png
 uploads/excels/*.xlsx

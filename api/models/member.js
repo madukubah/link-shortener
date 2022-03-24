@@ -70,6 +70,11 @@ const MemberSchema = new mongoose.Schema(
             default: 'active',
             required: [true, 'status cannot be empty']
         },
+        image_url: {
+            type: String,
+            trim: true,
+            default: '-',
+        },
     },
     { timestamps: { createdAt: 'createdAt', updatedAt: 'createdAt' } }
 );
