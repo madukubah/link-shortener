@@ -56,8 +56,9 @@ const signIn = async (req, res) => {
 
 const update = async (req, res) => {
     let id = req.user.id;
-    console.log(req.user);
     let newdata = req.body;
+    const member = await Member.findOne({ user_id: id});
+
     return User.findByIdAndUpdate(id, newdata, { runValidators: true })
         .then(result => {
             if (result) {
@@ -66,8 +67,23 @@ const update = async (req, res) => {
                         user.is_new = false
                         user.save()
                     }
+                    const token = jwt.sign(
+                        {
+                            id: user._id,
+                            username: user.username,
+                            pin: user.pin,
+                            member: member
+                        },
+                        process.env.JWT_KEY,
+                        {
+                            expiresIn: process.env.JWT_EXPIRY,
+                        }
+                    );
                     res.status(200);
-                    res.json(user);
+                    res.json({
+                        token: token,
+                        is_new : user.is_new
+                    })
                 });
             }
             else {

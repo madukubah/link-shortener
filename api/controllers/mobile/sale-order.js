@@ -96,10 +96,19 @@ const index = async (req, res) => {
                             localField: "product_id",
                             foreignField: "_id",
                             as: "product",
-
                         }       
                     },
                     { $unwind: "$product" },
+                    {
+                        $lookup:
+                        {
+                            from: "product-categories",
+                            localField: "product.product_category_id",
+                            foreignField: "_id",
+                            as: "product_category"
+                        }
+                    },
+                    { $unwind: "$product_category" },
                 ],
 
             }
