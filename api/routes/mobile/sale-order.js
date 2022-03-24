@@ -13,7 +13,7 @@ router.route('/')
 
 router.route('/:saleOrderId')
     .get(saleOrderController.show)
-    .patch(saleOrderController.update)
+    // .patch(saleOrderController.update)
     .delete(saleOrderController.unlink);
 
 module.exports = router;
