@@ -162,7 +162,7 @@ const update = (req, res) => {
     let newdata = req.body;
 
     if(req.file && req.file.filename) {
-        const filePath = `./uploads/sale-order/${req.file.filename}`
+        const filePath = `/uploads/sale_orders/${req.file.filename}`
         newdata.proof_tf_image_url = filePath
     }
 
