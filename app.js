@@ -6,35 +6,9 @@ const helmet = require('helmet')
 
 const indexRouter = require('./api/routes/index');
 const authRouter = require('./api/routes/auth');
-const memberRouter = require('./api/routes/member');
-const depositRouter = require('./api/routes/deposit');
 const userRouter = require('./api/routes/user');
-const loanContractRouter = require('./api/routes/loan-contract');
-const installmentRouter = require('./api/routes/installment');
-const branchOfficeRouter = require('./api/routes/branch-office');
-const articleRouter = require('./api/routes/article');
-const provinceRouter = require('./api/routes/province');
-const cityRouter = require('./api/routes/city');
-const productRouter = require('./api/routes/product');
-const productCategoryRouter = require('./api/routes/product-category');
-const dashboardRouter = require('./api/routes/dashboard');
-const summaryCutRouter = require('./api/routes/summary-cut');
-const saleOrderCutRouter = require('./api/routes/sale-order');
-const pointRouter = require('./api/routes/point');
-
-const mobileAuthRouter = require('./api/routes/mobile/auth');
-const mobileDepositRouter = require('./api/routes/mobile/deposit');
-const mobileArticleRouter = require('./api/routes/mobile/article');
-const mobileLoanContractRouter = require('./api/routes/mobile/loan-contract');
-const mobileInstallmentRouter = require('./api/routes/mobile/installment');
-const mobileProductCategoryRouter = require('./api/routes/mobile/product-category');
-const mobileProductRouter = require('./api/routes/mobile/product');
-const mobileSaleOrderRouter = require('./api/routes/mobile/sale-order');
-const mobileSaleOrderLineRouter = require('./api/routes/mobile/sale-orderline');
-const mobilePointRouter = require('./api/routes/mobile/point');
-const mobileInfoRouter = require('./api/routes/mobile/info');
-const mobileBankRouter = require('./api/routes/mobile/bank');
-const mobileMemberRouter = require('./api/routes/mobile/member');
+const linkRouter = require('./api/routes/link');
+const visitRouter = require('./api/routes/visit');
 
 
 app.use(helmet())
@@ -57,37 +31,11 @@ app.use((request, response, next) => {
 })
 
 //api
-app.use('/', indexRouter);
 app.use('/auth', authRouter);
-app.use('/member', memberRouter);
-app.use('/deposit', depositRouter);
 app.use('/user', userRouter);
-app.use('/loan-contract', loanContractRouter);
-app.use('/installment', installmentRouter);
-app.use('/branch-office', branchOfficeRouter);
-app.use('/article', articleRouter);
-app.use('/province', provinceRouter);
-app.use('/city', cityRouter);
-app.use('/product', productRouter);
-app.use('/product-category', productCategoryRouter);
-app.use('/dashboard', dashboardRouter);
-app.use('/summary-cut', summaryCutRouter);
-app.use('/sale', saleOrderCutRouter);
-app.use('/point', pointRouter);
-
-app.use('/mobile/auth', mobileAuthRouter);
-app.use('/mobile/deposit', mobileDepositRouter);
-app.use('/mobile/article', mobileArticleRouter);
-app.use('/mobile/loan-contract', mobileLoanContractRouter);
-app.use('/mobile/installment', mobileInstallmentRouter);
-app.use('/mobile/product-category', mobileProductCategoryRouter);
-app.use('/mobile/product', mobileProductRouter);
-app.use('/mobile/sale', mobileSaleOrderRouter);
-app.use('/mobile/sale-orderline', mobileSaleOrderLineRouter);
-app.use('/mobile/point', mobilePointRouter);
-app.use('/mobile/info', mobileInfoRouter);
-app.use('/mobile/bank', mobileBankRouter);
-app.use('/mobile/member', mobileMemberRouter);
+app.use('/link', linkRouter);
+app.use('/visit', visitRouter);
+app.use('/', indexRouter);
 
 // handle error
 app.use((request, response, next) => {
